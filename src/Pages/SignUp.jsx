@@ -51,7 +51,7 @@ export default function SignUp() {
 
   // ✅ 3. Submit Function
   const onSubmit = async (data) => {
-    console.log("Form Data:", data);
+    console.log("Form test:", data);
 
     const response = await fetch("https://vesyalmewlvmceevyias.supabase.co/auth/v1/signup", {
       method: "POST",
