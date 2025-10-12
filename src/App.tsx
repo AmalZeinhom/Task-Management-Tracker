@@ -1,8 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./App.css";
-import SignUp from "./Pages/SignUp";
+import SignUp from "./Pages/SignUp.js";
+import Home from "./Pages/Home.js";
+// import "../App.css";
+// import SignUp from "./Pages/SignUp";
 // import Layout from "./Components/Layout";
-import Home from "./Pages/Home";
+// import Home from "./Pages/Home";
 
 let routes = createBrowserRouter([
   {

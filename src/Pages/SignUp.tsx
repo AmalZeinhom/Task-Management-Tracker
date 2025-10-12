@@ -29,9 +29,11 @@ const signUpSchema = z
       .refine((val) => !/\s/.test(val), {
         message: "Password cannot contain spaces",
       }),
-    confirmPassword: z.string(),
-    terms: z.literal(true, {
-      errorMap: () => ({ message: "You must accept terms & conditions" }),
+    confirmPassword: z.string().refine((val) => !/\s/.test(val), {
+      message: "Please confirm your password",
+    }),
+    terms: z.boolean().refine((val) => val === true, {
+      message: "You must accept terms & conditions",
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -39,18 +41,20 @@ const signUpSchema = z
     path: ["confirmPassword"],
   });
 
+  type SignUpFormData = z.infer<typeof signUpSchema>;
+
 export default function SignUp() {
   // ✅ 2. Using useForm with zodResolver
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   });
 
   // ✅ 3. Submit Function
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: SignUpFormData) => {
     console.log("Form Data:", data);
 
     const response = await fetch("https://vesyalmewlvmceevyias.supabase.co/auth/v1/signup", {
