@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import registerImg from "../assets/register.png";
 import toast from "react-hot-toast";
+import FormInput from "../Components/Common/FormInput";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
@@ -103,120 +104,90 @@ export function SignUp() {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Controller
-                name="name"
-                defaultValue=""
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Full Name"
-                      {...field}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    />
-                    {fieldState.error && (
-                      <p className="text-red-400 text-xs mt-1 text-left">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
+            <Controller
+              name="name"
+              defaultValue=""
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <FormInput
+                    label="Full Name"
+                    id="name"
+                    type="text"
+                    field={field}
+                    error={fieldState.error}
+                  />
+                </div>
+              )}
+            />
 
-            <div>
-              <Controller
-                name="email"
-                defaultValue=""
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div>
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      {...field}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    />
-                    {fieldState.error && (
-                      <p className="text-red-400 text-xs mt-1 text-left">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
+            <Controller
+              name="email"
+              defaultValue=""
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <FormInput
+                    label="Email"
+                    id="email"
+                    type="email"
+                    field={field}
+                    error={fieldState.error}
+                  />
+                </div>
+              )}
+            />
 
-            <div>
-              <Controller
-                name="job_title"
-                defaultValue=""
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Job Title (optional)"
-                      {...field}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    />
-                    {fieldState.error && (
-                      <p className="text-red-400 text-xs mt-1 text-left">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
+            <Controller
+              name="job_title"
+              defaultValue=""
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <FormInput
+                    label="Job Title (Optional)"
+                    id="job_title"
+                    type="text"
+                    field={field}
+                    error={fieldState.error}
+                  />
+                </div>
+              )}
+            />
 
-            <div>
-              <Controller
-                name="password"
-                defaultValue=""
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div>
-                    <input
-                      type="password"
-                      placeholder="Password"
-                      {...field}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    />
-                    {fieldState.error && (
-                      <p className="text-red-400 text-xs mt-1 text-left">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
+            <Controller
+              name="password"
+              defaultValue=""
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <FormInput
+                    label="Password"
+                    id="password"
+                    type="password"
+                    field={field}
+                    error={fieldState.error}
+                  />
+                </div>
+              )}
+            />
 
-            <div>
-              <Controller
-                name="confirmPassword"
-                defaultValue=""
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div>
-                    <input
-                      type="password"
-                      placeholder="Confirm Password"
-                      {...field}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    />
-                    {fieldState.error && (
-                      <p className="text-red-400 text-xs mt-1 text-left">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
+            <Controller
+              name="confirmPassword"
+              defaultValue=""
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <FormInput
+                    label="Confirm Password"
+                    id="confirmPassword"
+                    type="password"
+                    field={field}
+                    error={fieldState.error}
+                  />
+                </div>
+              )}
+            />
 
             <div className="flex items-center space-x-2">
               <Controller
@@ -250,7 +221,7 @@ export function SignUp() {
 
             <button
               type="submit"
-              className="w-full bg-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
+              className="w-full bg-blue-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
             >
               Sign Up
             </button>
