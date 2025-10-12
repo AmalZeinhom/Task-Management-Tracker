@@ -2,14 +2,17 @@ import js from "@eslint/js";
 import globals from "globals";
 import pluginReact from "eslint-plugin-react";
 import prettierPlugin from "eslint-plugin-prettier";
+import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   js.configs.recommended, // قواعد JavaScript الأساسية
+  ...tseslint.configs.recommended, // قواعد TypeScript
   pluginReact.configs.flat.recommended, // قواعد React
   {
-    files: ["**/*.{js,jsx}"],
+    files: ["**/*.{js,jsx,ts,tsx}"], // ✅ دعم TypeScript
     languageOptions: {
+      parser: tseslint.parser, // ✅ استخدم parser الخاص بـ TypeScript
       ecmaVersion: 2021,
       sourceType: "module",
       globals: globals.browser,
@@ -35,7 +38,8 @@ export default defineConfig([
           trailingComma: "es5",
         },
       ],
-      "react/react-in-jsx-scope": "off", // React 17+ مش محتاج import React
+      "react/react-in-jsx-scope": "off", // مش محتاج import React في React 17+
+      "@typescript-eslint/no-explicit-any": "off", // لتفادي التحذير لما استخدم any
     },
   },
 ]);

@@ -1,14 +1,12 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import registerImg from "../assets/register.png";
 import toast from "react-hot-toast";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
-console.log("URL :", supabaseUrl);
 
-// ✅ 1. Define Validation Schema using zod
 const signUpSchema = z
   .object({
     name: z
@@ -19,7 +17,7 @@ const signUpSchema = z
       .refine((val) => !/\s{2,}/.test(val), {
         message: "Name cannot contain multiple consecutive spaces",
       }),
-    email: z.string().email("Invalid email address"),
+    email: z.email("Invalid email address"),
     job_title: z.string().optional(),
     password: z
       .string()
@@ -40,145 +38,216 @@ const signUpSchema = z
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Passwords does not match",
     path: ["confirmPassword"],
   });
 
-  type SignUpFormData = z.infer<typeof signUpSchema>;
+type SignUpFormData = z.infer<typeof signUpSchema>;
 
-export default function SignUp() {
-  // ✅ 2. Using useForm with zodResolver
+export function SignUp() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   });
 
-  // ✅ 3. Submit Function
   const onSubmit = async (data: SignUpFormData) => {
-    console.log("Form Data:", data);
-
-    const response = await fetch("https://vesyalmewlvmceevyias.supabase.co/auth/v1/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlc3lhbG1ld2x2bWNlZXZ5aWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5OTg1NzMsImV4cCI6MjA3NDU3NDU3M30.LKV0Hqg2KpD7lMBg-bnvrfChU_ePWHqD_mIEYnqBJCc",
-      },
-      body: JSON.stringify({
-        email: data.email,
-        password: data.password,
-        data: {
-          name: data.name,
-          job_title: data.job_title || "",
+    try {
+      const response = await fetch(`${supabaseUrl}/auth/v1/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: supabasekey,
         },
-      }),
-    });
-
-    if (response.ok) {
-      toast("Good Job!", {
-        icon: "👏",
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          data: {
+            name: data.name,
+            job_title: data.job_title || "",
+          },
+        }),
       });
-      window.location.href = "/"; // Redirect to main page
-    } else {
-      const errorData = await response.json();
-      console.error("Error:", errorData);
-      toast.error("Failed to register, Please try again!");
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.mesaage || "Something went wrong!");
+      }
+      const result = await response.json();
+      console.error("Signup successful:", result);
+      toast.success("Account created successfully");
+    } catch (error: any) {
+      console.error("Error during regiteration:", error.message);
+      toast.error(`${error.message}`);
     }
   };
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2 bg-secondary">
-      {/* ============== Image ============== */}
       <div className="hidden md:flex justify-center items-center">
         <img src={registerImg} alt="Register" className="max-w-[80%] h-auto" />
       </div>
 
-      {/* ============== Form ============== */}
       <div className="flex flex-col justify-center items-center p-8">
         <div className="w-full max-w-md bg-light p-8 rounded-xl shadow-2xl">
-          <h1 className="text-3xl font-bold text-dark mb-2 text-center">Welcome back, Yash</h1>
+          <h1 className="text-3xl font-bold text-dark mb-2 text-center">Register</h1>
           <p className="text-xs text-dark mb-6 text-center">
-            Welcome back! Please enter your details.
+            Create a free account or{" "}
+            <a href="#" className="text-cyan-600">
+              Log IN
+            </a>
+            .
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
             <div>
-              <input
-                type="text"
-                placeholder="Name"
-                {...register("name")}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
-              />
-              {errors.name && (
-                <p className="text-red-400 text-xs mt-1 text-left">{errors.name.message}</p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div>
-              <input
-                type="email"
-                placeholder="Email"
-                {...register("email")}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
-              />
-              {errors.email && (
-                <p className="text-red-400 text-xs mt-1 text-left">{errors.email.message}</p>
-              )}
-            </div>
-
-            {/* Job Title */}
-            <div>
-              <input
-                type="text"
-                placeholder="Job Title (optional)"
-                {...register("job_title")}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              <Controller
+                name="name"
+                defaultValue=""
+                control={control}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Full Name"
+                      {...field}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-400 text-xs mt-1 text-left">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
               />
             </div>
 
-            {/* Password */}
             <div>
-              <input
-                type="password"
-                placeholder="Password"
-                {...register("password")}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              <Controller
+                name="email"
+                defaultValue=""
+                control={control}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      {...field}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-400 text-xs mt-1 text-left">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
               />
-              {errors.password && (
-                <p className="text-red-400 text-xs mt-1 text-left">{errors.password.message}</p>
-              )}
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                {...register("confirmPassword")}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              <Controller
+                name="job_title"
+                defaultValue=""
+                control={control}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Job Title (optional)"
+                      {...field}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-400 text-xs mt-1 text-left">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
               />
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
-              )}
             </div>
 
-            {/* Terms */}
+            <div>
+              <Controller
+                name="password"
+                defaultValue=""
+                control={control}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      {...field}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-400 text-xs mt-1 text-left">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+
+            <div>
+              <Controller
+                name="confirmPassword"
+                defaultValue=""
+                control={control}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Confirm Password"
+                      {...field}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-400 text-xs mt-1 text-left">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+
             <div className="flex items-center space-x-2">
-              <input type="checkbox" id="terms" {...register("terms")} />
-              <label htmlFor="terms" className="text-sm text-gray-600">
-                Terms & Conditions
-              </label>
-            </div>
-            {errors.terms && (
-              <p className="text-red-400 text-xs mt-1 text-left">{errors.terms.message}</p>
-            )}
+              <Controller
+                name="terms"
+                control={control}
+                defaultValue={false}
+                render={({ field, fieldState }) => (
+                  <div className="flex flex-col items-start space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        className="cursor-pointer"
+                      />
+                      <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
+                        Terms & Conditions
+                      </label>
+                    </div>
 
-            {/* Button */}
+                    {fieldState.error && (
+                      <p className="text-red-400 text-xs mt-1 text-left">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+
             <button
               type="submit"
               className="w-full bg-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
