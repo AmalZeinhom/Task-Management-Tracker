@@ -4,6 +4,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import registerImg from "../assets/register.png";
 import toast from "react-hot-toast";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
+console.log("URL :", supabaseUrl);
 
 // ✅ 1. Define Validation Schema using zod
 const signUpSchema = z
