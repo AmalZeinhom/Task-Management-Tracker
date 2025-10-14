@@ -5,84 +5,63 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import registerImg from "../assets/register.png";
 import toast from "react-hot-toast";
 import FormInput from "../Components/Common/FormInput";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
-const signUpSchema = z
-  .object({
-    name: z
-      .string()
-      .min(3, "Name must be at least 3 characters")
-      .max(50, "Name must be at most 50 characters")
-      .regex(
-        /^[A-Za-z\u0600-\u06FF ]+$/,
-        "Name can only contain letters and spaces"
-      )
-      .refine((val) => !/\s{2,}/.test(val), {
-        message: "Name cannot contain multiple consecutive spaces",
-      }),
-    email: z.email("Invalid email address"),
-    job_title: z.string().optional(),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(64, "Password must be less than 64 characters")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Must contain at least one number")
-      .regex(/[!@#$%^&*]/, "Must contain at least one special character")
-      .refine((val) => !/\s/.test(val), {
-        message: "Password cannot contain spaces",
-      }),
-    confirmPassword: z.string().refine((val) => !/\s/.test(val), {
-      message: "Please confirm your password",
+const signUpSchema = z.object({
+  email: z.email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(64, "Password must be less than 64 characters")
+    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Must contain at least one number")
+    .regex(/[!@#$%^&*]/, "Must contain at least one special character")
+    .refine((val) => !/\s/.test(val), {
+      message: "Password cannot contain spaces",
     }),
-    terms: z.boolean().refine((val) => val === true, {
-      message: "You must accept terms & conditions",
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords does not match",
-    path: ["confirmPassword"],
-  });
+  rememberME: z.boolean().optional(),
+});
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
-export function SignUp() {
+export function LogIn() {
   const { handleSubmit, control } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      const response = await fetch(`${supabaseUrl}/auth/v1/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: supabasekey,
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-          data: {
-            name: data.name,
-            job_title: data.job_title || "",
+      const response = await fetch(
+        `${supabaseUrl}/auth/v1/token?grant_type=password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: supabasekey,
           },
-        }),
-      });
+          body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Something went wrong!");
       }
       const result = await response.json();
-      console.error("Signup successful:", result);
-      toast.success("Account created successfully");
+      console.error("Login successful:", result);
+      toast.success("Welcome back!");
+      navigate("/");
     } catch (error: any) {
-      console.error("Error during regiteration:", error.message);
+      console.error("Error during login:", error.message);
       toast.error(`${error.message}`);
     }
   };
@@ -96,34 +75,13 @@ export function SignUp() {
       <div className="flex flex-col justify-center items-center p-8">
         <div className="w-full max-w-md bg-light p-8 rounded-xl shadow-2xl">
           <h1 className="text-3xl font-bold text-dark mb-2 text-center">
-            Register
+            Welcome Back!
           </h1>
           <p className="text-xs text-dark mb-6 text-center">
-            Create a free account or{" "}
-            <NavLink to="/login" className="text-cyan-600">
-              Log IN
-            </NavLink>
-            .
+            Welcome back! Please enter your details.
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Controller
-              name="name"
-              defaultValue=""
-              control={control}
-              render={({ field, fieldState }) => (
-                <div>
-                  <FormInput
-                    label="Full Name"
-                    id="name"
-                    type="text"
-                    field={field}
-                    error={fieldState.error}
-                  />
-                </div>
-              )}
-            />
-
             <Controller
               name="email"
               defaultValue=""
@@ -134,23 +92,6 @@ export function SignUp() {
                     label="Email"
                     id="email"
                     type="email"
-                    field={field}
-                    error={fieldState.error}
-                  />
-                </div>
-              )}
-            />
-
-            <Controller
-              name="job_title"
-              defaultValue=""
-              control={control}
-              render={({ field, fieldState }) => (
-                <div>
-                  <FormInput
-                    label="Job Title (Optional)"
-                    id="job_title"
-                    type="text"
                     field={field}
                     error={fieldState.error}
                   />
@@ -231,26 +172,9 @@ export function SignUp() {
               )}
             />
 
-            <Controller
-              name="confirmPassword"
-              defaultValue=""
-              control={control}
-              render={({ field, fieldState }) => (
-                <div>
-                  <FormInput
-                    label="Confirm Password"
-                    id="confirmPassword"
-                    type="password"
-                    field={field}
-                    error={fieldState.error}
-                  />
-                </div>
-              )}
-            />
-
             <div className="flex items-center space-x-2">
               <Controller
-                name="terms"
+                name="rememberME"
                 control={control}
                 defaultValue={false}
                 render={({ field, fieldState }) => (
@@ -258,16 +182,16 @@ export function SignUp() {
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
-                        id="terms"
+                        id="rememberME"
                         checked={field.value}
                         onChange={(e) => field.onChange(e.target.checked)}
                         className="cursor-pointer"
                       />
                       <label
-                        htmlFor="terms"
+                        htmlFor="rememberME"
                         className="text-sm text-gray-600 cursor-pointer"
                       >
-                        Terms & Conditions
+                        Remember me?
                       </label>
                     </div>
 
@@ -285,16 +209,16 @@ export function SignUp() {
               type="submit"
               className="w-full bg-blue-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
             >
-              Sign Up
+              Log IN
             </button>
 
             <p className="text-sm text-gray-600 text-center">
-              Already have an account?
+              Don’t have an account?
               <NavLink
-                to="/login"
+                to="/signup"
                 className="underline underline-offset-2 ms-2"
               >
-                Login
+                Sign up for free
               </NavLink>
             </p>
           </form>
