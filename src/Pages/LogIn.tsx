@@ -10,18 +10,8 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
 const signUpSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(64, "Password must be less than 64 characters")
-    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Must contain at least one number")
-    .regex(/[!@#$%^&*]/, "Must contain at least one special character")
-    .refine((val) => !/\s/.test(val), {
-      message: "Password cannot contain spaces",
-    }),
+  email: z.email("Email is required"),
+  password: z.string().nonempty("Password is required"),
   rememberME: z.boolean().optional(),
 });
 
@@ -54,7 +44,7 @@ export function LogIn() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Something went wrong!");
+        throw new Error(errorData.message || "Invalid email or password!");
       }
       const result = await response.json();
       console.error("Login successful:", result);
@@ -62,7 +52,7 @@ export function LogIn() {
       navigate("/");
     } catch (error: any) {
       console.error("Error during login:", error.message);
-      toast.error(`${error.message}`);
+      toast.error("Invalid email or password!");
     }
   };
 
@@ -172,13 +162,13 @@ export function LogIn() {
               )}
             />
 
-            <div className="flex items-center space-x-2">
+            <div className="flex justify-between space-x-2">
               <Controller
                 name="rememberME"
                 control={control}
                 defaultValue={false}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col items-start space-y-1">
+                render={({ field }) => (
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -189,23 +179,27 @@ export function LogIn() {
                       />
                       <label
                         htmlFor="rememberME"
-                        className="text-sm text-gray-600 cursor-pointer"
+                        className="text-sm text-gray-500 cursor-pointer"
                       >
                         Remember me?
                       </label>
                     </div>
-
-                    {fieldState.error && (
-                      <p className="text-red-400 text-xs mt-1 text-left">
-                        {fieldState.error.message}
-                      </p>
-                    )}
                   </div>
                 )}
               />
+
+              <div>
+                <NavLink
+                  to="#"
+                  className="text-sm text-gray-500 hover:text-gray-800"
+                >
+                  Forgot password?
+                </NavLink>
+              </div>
             </div>
 
             <button
+              onClick={() => navigate("/dashboard")}
               type="submit"
               className="w-full bg-blue-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
             >

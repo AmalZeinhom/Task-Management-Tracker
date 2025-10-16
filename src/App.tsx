@@ -3,6 +3,7 @@ import Home from "./Pages/Home.js";
 import { Toaster } from "react-hot-toast";
 import { SignUp } from "./Pages/SignUp.js";
 import { LogIn } from "./Pages/LogIn.js";
+import { Dashboard } from "./Pages/Dashboard.js";
 
 const routes = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const routes = createBrowserRouter([
   {
     path: "/login",
     element: <LogIn />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
 ]);
 

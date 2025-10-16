@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import registerImg from "../assets/register.png";
 import toast from "react-hot-toast";
 import FormInput from "../Components/Common/FormInput";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
@@ -55,6 +55,7 @@ export function SignUp() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
@@ -282,6 +283,7 @@ export function SignUp() {
             </div>
 
             <button
+              navigate( to="/home")
               type="submit"
               className="w-full bg-blue-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
             >
