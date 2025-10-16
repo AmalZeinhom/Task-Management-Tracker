@@ -82,6 +82,7 @@ export function SignUp() {
       const result = await response.json();
       console.error("Signup successful:", result);
       toast.success("Account created successfully");
+      navigate("/login");
     } catch (error: any) {
       console.error("Error during regiteration:", error.message);
       toast.error(`${error.message}`);
@@ -283,7 +284,6 @@ export function SignUp() {
             </div>
 
             <button
-              navigate( to="/home")
               type="submit"
               className="w-full bg-blue-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
             >

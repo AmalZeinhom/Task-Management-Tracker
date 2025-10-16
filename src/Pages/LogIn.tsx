@@ -49,7 +49,7 @@ export function LogIn() {
       const result = await response.json();
       console.error("Login successful:", result);
       toast.success("Welcome back!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       console.error("Error during login:", error.message);
       toast.error("Invalid email or password!");
@@ -199,7 +199,6 @@ export function LogIn() {
             </div>
 
             <button
-              onClick={() => navigate("/dashboard")}
               type="submit"
               className="w-full bg-blue-darkBlue text-white font-semibold py-2 rounded-lg hover:bg-dark transition-colors"
             >
