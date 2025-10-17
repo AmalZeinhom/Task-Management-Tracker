@@ -90,13 +90,13 @@ export function SignUp() {
   };
 
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2 bg-secondary">
+    <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2 bg-brightness-secondary">
       <div className="hidden md:flex justify-center items-center">
         <img src={registerImg} alt="Register" className="max-w-[80%] h-auto" />
       </div>
 
       <div className="flex flex-col justify-center items-center p-8">
-        <div className="w-full max-w-md bg-light p-8 rounded-xl shadow-2xl">
+        <div className="w-full max-w-md bg-brightness-primary p-8 rounded-xl shadow-2xl">
           <h1 className="text-3xl font-bold text-dark mb-2 text-center">
             Register
           </h1>

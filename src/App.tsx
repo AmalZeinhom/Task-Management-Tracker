@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { SignUp } from "./Pages/SignUp.js";
 import { LogIn } from "./Pages/LogIn.js";
 import { Dashboard } from "./Pages/Dashboard.js";
+import { ForgetPassword } from "./Pages/ForgetPassword.js";
 
 const routes = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const routes = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/forget-password",
+    element: <ForgetPassword />,
   },
 ]);
 
