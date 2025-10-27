@@ -80,7 +80,9 @@ export function ForgetPassword() {
         throw new Error(errorData.message || "Invalid email address!");
       }
 
-      toast.success("If an account exists with this email, we’ve sent a password reset link.");
+      toast.success(
+        "If an account exists with this email, we’ve sent a password reset link."
+      );
       navigate("/login");
     } catch (error: any) {
       console.error("Error during password reset:", error.message);
@@ -113,7 +115,9 @@ export function ForgetPassword() {
         localStorage.setItem("resentTrials", String(next));
         return next;
       });
-      toast.success("If an account exists with this email, we’ve sent a password reset link.");
+      toast.success(
+        "If an account exists with this email, we’ve sent a password reset link."
+      );
     } catch (error) {
       console.error("Error during resend:", error);
       toast.error("Something went wrong. Please try again later.");
@@ -163,7 +167,9 @@ export function ForgetPassword() {
                 type="submit"
                 disabled={loading}
                 className={`w-1/2 bg-darkness-dark text-white py-1 rounded-lg transition-colors ${
-                  loading ? "opacity-50 cursor-not-allowed" : "hover:bg-cyan-950"
+                  loading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-cyan-950"
                 }`}
               >
                 {loading ? "Sending..." : "Send Reset Link"}
@@ -184,13 +190,17 @@ export function ForgetPassword() {
               disabled={resendDisabled || loading}
               onClick={handleResend}
               className={`block mx-auto text-sm ${
-                resendDisabled ? "text-gray-400" : "text-darkness-iconList hover:underline"
+                resendDisabled
+                  ? "text-gray-400"
+                  : "text-darkness-iconList hover:underline"
               }`}
             >
               {loading
                 ? "Sending..."
                 : resendDisabled
-                  ? `Resend available in ${Math.floor(countDown / 60)}:${(countDown % 60)
+                  ? `Resend available in ${Math.floor(countDown / 60)}:${(
+                      countDown % 60
+                    )
                       .toString()
                       .padStart(2, "0")}`
                   : "Resend Email"}

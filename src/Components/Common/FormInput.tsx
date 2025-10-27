@@ -19,20 +19,22 @@ const FormInput: React.FC<FormInputProps> = ({
   icon,
 }) => {
   return (
-    <div className="relative w-full">
-      <input
-        id={id}
-        placeholder={label}
-        type={type}
-        {...field}
-        className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10"
-      />
+    <div>
+      <div className="relative w-full">
+        <input
+          id={id}
+          placeholder={label}
+          type={type}
+          {...field}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10"
+        />
 
-      {icon && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/3 text-gray-400 cursor-pointer">
-          {icon}
-        </div>
-      )}
+        {icon && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/3 text-gray-400 cursor-pointer">
+            {icon}
+          </div>
+        )}
+      </div>
 
       {error && (
         <p className="text-red-400 text-xs mt-1 text-left">{error.message}</p>
