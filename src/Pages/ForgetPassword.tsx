@@ -1,66 +1,72 @@
-import React, { useEffect, useRef, useState } from "react";
-import forgrtPassword from "../assets/forget-pass.png";
+import React, { useEffect, useState } from "react";
+import forgetPassword from "../assets/forget-pass.png";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import FormInput from "../Components/Common/FormInput";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
+import { FaStopwatch, FaEnvelope } from "react-icons/fa";
 
-// ✅ Supabase keys (from environment)
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
-// ✅ Validation schema
 const schema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.email("Please enter a valid email address"),
 });
 
 type FormData = z.infer<typeof schema>;
 
 export function ForgetPassword() {
-  const { handleSubmit, control, watch } = useForm<FormData>({
+  const { handleSubmit, control } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const emailFrom = watch("email");
   const navigate = useNavigate();
 
-  // ✅ States
   const [loading, setLoading] = useState(false);
-  const [resendDisabled, setResendDisabled] = useState(true);
-  const [countDown, setCountDown] = useState(300); // 5 minutes
-  const [trials, setTrials] = useState(() => {
-    const savedTrials = localStorage.getItem("resentTrials");
-    return savedTrials ? Number(savedTrials) : 0;
-  });
+  const [countDown, setCountDown] = useState(0);
+  const [trials, setTrials] = useState(0);
+  const [disabled, setDisabled] = useState(false);
 
-  const timerRef = useRef<number | null>(null);
-
-  // ✅ Countdown logic
   useEffect(() => {
-    if (resendDisabled && countDown > 0) {
-      timerRef.current = window.setInterval(() => {
+    let timer: ReturnType<typeof setInterval>;
+
+    if (countDown > 0) {
+      timer = setInterval(() => {
         setCountDown((prev) => prev - 1);
       }, 1000);
     } else if (countDown === 0) {
-      setResendDisabled(false);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+      setDisabled(false); // After timer be finished, the button be enabled
+    }
+    return () => clearInterval(timer);
+  }, [countDown]);
+
+  const formatTime = (seconds: number) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  //When press the button
+  const handleResend = async () => {
+    if (trials >= 3) {
+      toast.error("You have reached the maximum resend attemps!");
+      setDisabled(true);
+      return;
     }
 
-    // Cleanup
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [resendDisabled, countDown]);
+    //Email Sending
+    toast.success(
+      "If an account exists with this email, we’ve sent a password reset link."
+    );
 
-  // ✅ API request to send reset link
+    setTrials((prev) => prev + 1);
+    setCountDown(300);
+    setDisabled(true);
+  };
+
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
@@ -76,76 +82,56 @@ export function ForgetPassword() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Invalid email address!");
+        throw new Error("Invalid email address!");
       }
 
       toast.success(
-        "If an account exists with this email, we’ve sent a password reset link."
+        "If an account exists with this email, a password reset link has been sent."
       );
-      navigate("/login");
-    } catch (error: any) {
-      console.error("Error during password reset:", error.message);
-      toast.error("Something went wrong. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Handle resend logic
-  const handleResend = async () => {
-    if (!emailFrom) {
-      toast.error("Please enter your email first!");
-      return;
-    }
-
-    if (trials >= 3) {
-      toast.error("You’ve reached the resend limit!");
-      return;
-    }
-
-    setResendDisabled(true);
-    setCountDown(300);
-    setLoading(true);
-
-    try {
-      await onSubmit({ email: emailFrom });
-      setTrials((prev) => {
-        const next = prev + 1;
-        localStorage.setItem("resentTrials", String(next));
-        return next;
-      });
-      toast.success(
-        "If an account exists with this email, we’ve sent a password reset link."
-      );
-    } catch (error) {
-      console.error("Error during resend:", error);
-      toast.error("Something went wrong. Please try again later.");
+    } catch (err: any) {
+      const errorMessage =
+        err.message || "Failed to send reset email. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-      <div className="bg-brightness-primary rounded-2xl shadow-2xl flex flex-col md:flex-row items-center justify-center max-w-3xl p-6 md:p-10 space-y-6 md:space-y-0 md:space-x-10">
-        {/* 🖼️ Left side - Image */}
-        <div className="w-full md:w-1/2 flex justify-center">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-50 via-blue-100 to-cyan-50 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="rounded-3xl shadow-2xl flex flex-col md:flex-row items-center justify-center max-w-4xl p-8 md:p-12 space-y-8 md:space-y-0 md:space-x-10 bg-gradient-to-br from-slate-400 via-blue-50 to-white"
+      >
+        <motion.div
+          initial={{ scale: 1 }}
+          animate={{ scale: 1.2 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+          className="w-full md:w-1/2 flex justify-center"
+        >
           <img
-            src={forgrtPassword}
+            src={forgetPassword}
             alt="Forget Password"
-            className="max-w-[80%] md:max-w-[90%] h-auto"
+            className="max-w-[85%] h-auto drop-shadow-lg hidden md:flex"
           />
-        </div>
+        </motion.div>
 
-        {/* 🧾 Right side - Form */}
-        <div className="w-full md:w-1/2">
-          <h1 className="text-2xl text-gray-600 mb-6 text-center md:text-left">
+        <div className="w-full md:w-1/2 ">
+          <h1 className="text-3xl font-semibold text-blue-950 mb-6 text-center md:text-left">
             Forgot Your Password?
           </h1>
+          <p className="text-gray-500 text-sm mb-5 text-center md:text-left">
+            Enter your email address below, and we’ll send you a link to reset
+            your password.
+          </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Email Input */}
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            className="space-y-5"
+          >
             <Controller
               name="email"
               defaultValue=""
@@ -161,15 +147,14 @@ export function ForgetPassword() {
               )}
             />
 
-            {/* Action Buttons */}
             <div className="buttons flex justify-center gap-3 items-center">
               <button
                 type="submit"
-                disabled={loading}
-                className={`w-1/2 bg-darkness-dark text-white py-1 rounded-lg transition-colors ${
-                  loading
+                disabled={loading || disabled}
+                className={`w-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-2 rounded-xl font-medium transition-all ${
+                  loading || disabled
                     ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-cyan-950"
+                    : "hover:shadow-lg hover:scale-[1.02]"
                 }`}
               >
                 {loading ? "Sending..." : "Send Reset Link"}
@@ -178,36 +163,36 @@ export function ForgetPassword() {
               <button
                 onClick={() => navigate("/login")}
                 type="button"
-                className="w-1/2 bg-cyan-600 text-gray-50 py-1 rounded-lg hover:bg-gray-500 transition-colors ease-linear"
+                className="w-1/2 border border-gray-300 text-gray-600 py-2 rounded-xl hover:bg-gray-100 transition-all font-medium"
               >
                 Back to Sign In
               </button>
             </div>
 
-            {/* Resend Button */}
-            <button
-              type="button"
-              disabled={resendDisabled || loading}
-              onClick={handleResend}
-              className={`block mx-auto text-sm ${
-                resendDisabled
-                  ? "text-gray-400"
-                  : "text-darkness-iconList hover:underline"
-              }`}
-            >
-              {loading
-                ? "Sending..."
-                : resendDisabled
-                  ? `Resend available in ${Math.floor(countDown / 60)}:${(
-                      countDown % 60
-                    )
-                      .toString()
-                      .padStart(2, "0")}`
-                  : "Resend Email"}
-            </button>
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={disabled}
+                className={`text-sm font-medium transition-colors ${disabled ? "text-gray-400 cursor-not-allowed" : "text-blue-900 cursor-pointer hover:text-blue-700"}`}
+              >
+                {disabled ? (
+                  <>
+                    <FaStopwatch className="inline mr-1" /> Resend Email Will be
+                    available in {formatTime(countDown)}
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <FaEnvelope className="inline mr-1" /> Don’t receive an
+                    email? Resend
+                  </>
+                )}
+              </button>
+            </div>
           </form>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

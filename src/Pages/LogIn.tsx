@@ -81,7 +81,11 @@ export function LogIn() {
       toast.success(`Welcome back ${user.user_metadata?.name}!`);
       navigate("/dashboard");
     } catch (err: any) {
-      toast.error((err as Error).message);
+      const errorMessage =
+        err.response?.data?.error_description ||
+        err.response?.data?.message ||
+        "Email or Password is incorrect";
+      toast.error(errorMessage);
     }
   };
 
