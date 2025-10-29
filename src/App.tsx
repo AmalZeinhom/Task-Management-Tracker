@@ -5,6 +5,7 @@ import { SignUp } from "./Pages/SignUp.js";
 import { LogIn } from "./Pages/LogIn.js";
 import { Dashboard } from "./Pages/Dashboard.js";
 import { ForgetPassword } from "./Pages/ForgetPassword.js";
+import { ResetPassword } from "./Pages/ResetPassword.js";
 
 const routes = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const routes = createBrowserRouter([
   {
     path: "/forget-password",
     element: <ForgetPassword />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
 ]);
 

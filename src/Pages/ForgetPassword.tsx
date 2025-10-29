@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { FaStopwatch, FaEnvelope } from "react-icons/fa";
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -70,19 +71,14 @@ export function ForgetPassword() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      const response = await fetch(`${supabaseUrl}/auth/v1/recover`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: supabaseKey,
-        },
-        body: JSON.stringify({
-          email: data.email,
-        }),
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: "http://localhost:5173/reset-password",
       });
 
-      if (!response.ok) {
-        throw new Error("Invalid email address!");
+      if (error) {
+        throw new Error(error.message);
       }
 
       toast.success(
