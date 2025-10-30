@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import FormInput from "../Components/Common/FormInput";
 import { NavLink, useNavigate } from "react-router-dom";
 import { EyeClosedIcon, EyeOpenIcon } from "../assets/icons/eye";
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 

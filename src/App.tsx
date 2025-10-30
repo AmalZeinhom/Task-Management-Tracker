@@ -6,16 +6,23 @@ import { LogIn } from "./Pages/LogIn.js";
 import { Dashboard } from "./Pages/Dashboard.js";
 import { ForgetPassword } from "./Pages/ForgetPassword.js";
 import { ResetPassword } from "./Pages/ResetPassword.js";
+import Layout from "./Components/Layout.js";
 
 const routes = createBrowserRouter([
   {
-    path: "/",
-    element: <SignUp />,
+    element: <Layout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/",
+        element: <Home />,
+      },
+    ],
   },
-  {
-    path: "/home",
-    element: <Home />,
-  },
+
   {
     path: "/signup",
     element: <SignUp />,
@@ -24,10 +31,7 @@ const routes = createBrowserRouter([
     path: "/login",
     element: <LogIn />,
   },
-  {
-    path: "/dashboard",
-    element: <Dashboard />,
-  },
+
   {
     path: "/forget-password",
     element: <ForgetPassword />,
