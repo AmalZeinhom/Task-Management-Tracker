@@ -57,7 +57,7 @@ export default function Navbar() {
     : "";
 
   return (
-    <nav className="w-full bg-brightness-secondary shadow-md py-4 px-9 mb-6 flex justify-between items-center flex-wrap">
+    <nav className="w-full bg-brightness-primary shadow-xl py-4 px-9 flex justify-between items-center flex-wrap z-50">
       <div className="flex items-center gap-4">
         <img src={logo} className="w-10 h-auto" alt="Task Tracker" />
         <h1 className="text-2xl font-bold text-blue-darkBlue">
@@ -67,10 +67,10 @@ export default function Navbar() {
 
       <div className="flex items-center gap-3 mt-2 sm:mt-0">
         <div className="text-right">
-          <h2 className="text-base font-semibold text-gray-600">
+          <h2 className="text-sm lg:text-base font-semibold text-gray-600">
             {user.name || "Loading..."}
           </h2>
-          <p className="text-sm text-gray-500">{user.job_title}</p>
+          <p className="text-xs lg:text-sm text-gray-500">{user.job_title}</p>
         </div>
         <div className="bg-blue-darkBlue text-white font-semibold rounded-full w-10 h-10 flex items-center justify-center text-lg">
           {initials || "—"}
