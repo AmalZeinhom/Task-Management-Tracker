@@ -36,6 +36,7 @@ export default defineConfig([
           printWidth: 80,
           tabWidth: 2,
           trailingComma: "es5",
+          "comma-dangle": "off",
         },
       ],
       "react/react-in-jsx-scope": "off", // مش محتاج import React في React 17+

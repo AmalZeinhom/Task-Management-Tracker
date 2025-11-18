@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
-import { createClient } from "@supabase/supabase-js";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
 export default function Navbar() {
   const [user, setUser] = useState({
@@ -22,29 +20,30 @@ export default function Navbar() {
     const fetchUserData = async () => {
       try {
         const access_token = Cookies.get("access_token");
+        console.log("access_token:", access_token);
 
         if (!access_token) {
           toast.error("Session expired. Please log in again.");
           return;
         }
 
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser(access_token);
+        const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            apikey: supabasekey,
+          },
+        });
 
-        if (error) throw error;
-        if (!user) {
-          toast.error("User not found");
-          return;
-        }
+        const data = await response.json();
 
         setUser({
-          name: user.user_metadata?.name,
-          job_title: user.user_metadata?.job_title || "Member",
+          name: data.user_metadata?.name || "User",
+          job_title: data.user_metadata?.job_title || "Member",
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
+        toast.error("Failed to fetch user data.");
       }
     };
 
@@ -72,14 +71,12 @@ export default function Navbar() {
       const response = await fetch(`${supabaseUrl}/auth/v1/logout`, {
         method: "POST",
         headers: {
-          apikey: supabaseKey,
           Authorization: `Bearer ${access_token}`,
+          apikey: supabasekey,
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Logout request failed");
-      }
+      if (!response.ok) throw new Error("Logout request failed");
 
       Cookies.remove("access_token");
       Cookies.remove("refresh_token");
@@ -112,7 +109,7 @@ export default function Navbar() {
         <div className="relative">
           <button
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className="bg-blue-900 text-white font-semibold w-9 h-9 rounded-full sm:w-10 sm:h-10 flex items-center justify-center text-base sm-text-lg focus:outline-non"
+            className="bg-blue-900 text-white font-semibold w-9 h-9 rounded-full sm:w-10 sm:h-10 flex items-center justify-center text-base sm-text-lg focus:outline-none"
           >
             {initials || "—"}
           </button>

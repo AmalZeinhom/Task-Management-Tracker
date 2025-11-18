@@ -32,6 +32,9 @@ export function LogIn() {
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const isSecure =
+    typeof window !== "undefined" &&
+    (window.location.protocol === "https:" || import.meta.env.PROD);
 
   const onSubmit = async (data: SignUpFormData) => {
     const { email, password } = data;
@@ -59,21 +62,21 @@ export function LogIn() {
       if (data.rememberME) {
         Cookies.set("access_token", access_token, {
           expires: 7,
-          secure: true,
+          secure: isSecure,
           sameSite: "strict",
         });
         Cookies.set("refresh_token", refresh_token, {
           expires: 7,
-          secure: true,
+          secure: isSecure,
           sameSite: "strict",
         });
       } else {
         Cookies.set("access_token", access_token, {
-          secure: true,
+          secure: isSecure,
           sameSite: "strict",
         });
         Cookies.set("refresh_token", refresh_token, {
-          secure: true,
+          secure: isSecure,
           sameSite: "strict",
         });
       }

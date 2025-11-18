@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { FaStopwatch, FaEnvelope } from "react-icons/fa";
-import { createClient } from "@supabase/supabase-js";
+import axios from "axios";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -50,7 +50,6 @@ export function ForgetPassword() {
     return `${min}:${sec.toString().padStart(2, "0")}`;
   };
 
-  //When press the button
   const handleResend = async () => {
     if (trials >= 3) {
       toast.error("You have reached the maximum resend attemps!");
@@ -58,7 +57,6 @@ export function ForgetPassword() {
       return;
     }
 
-    //Email Sending
     toast.success(
       "If an account exists with this email, we’ve sent a password reset link."
     );
@@ -71,15 +69,21 @@ export function ForgetPassword() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: "http://localhost:5173/reset-password",
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
+      await axios.post(
+        `${supabaseUrl}/auth/v1/recover`,
+        {
+          email: data.email,
+        },
+        {
+          headers: {
+            apikey: supabaseKey,
+            "Content-Type": "application/json",
+          },
+          params: {
+            redirect_to: `${window.location.origin}/reset-password`,
+          },
+        }
+      );
 
       toast.success(
         "If an account exists with this email, a password reset link has been sent."

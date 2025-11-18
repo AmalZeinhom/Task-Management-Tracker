@@ -29,7 +29,7 @@ export default function Sidebar() {
       </button>
 
       <aside
-        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-brightness-primary text-blue-darkBlue shadow-xl transition-all duration-300 
+        className={`top-16 left-0 h-[calc(100vh-4rem)] bg-brightness-primary text-blue-darkBlue shadow-xl transition-all duration-300 
         ${isCollapsed ? "w-20" : "w-64"} 
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} 
         lg:translate-x-0 z-40`}

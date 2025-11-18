@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./Pages/Home.js";
+import Home from "./Pages/Home";
 import { Toaster } from "react-hot-toast";
-import { SignUp } from "./Pages/SignUp.js";
-import { LogIn } from "./Pages/LogIn.js";
-import { Dashboard } from "./Pages/Dashboard.js";
-import { ForgetPassword } from "./Pages/ForgetPassword.js";
-import { ResetPassword } from "./Pages/ResetPassword.js";
-import Layout from "./Components/Layout.js";
+import { SignUp } from "./Pages/SignUp";
+import { LogIn } from "./Pages/LogIn";
+import { Dashboard } from "./Pages/Dashboard";
+import { ForgetPassword } from "./Pages/ForgetPassword";
+import { ResetPassword } from "./Pages/ResetPassword";
+import Layout from "./Components/Layout";
 
 const routes = createBrowserRouter([
   {
