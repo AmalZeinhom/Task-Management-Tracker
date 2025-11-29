@@ -1,10 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-<<<<<<< HEAD
 
-=======
->>>>>>> 831ecf38b8413043957dd340670cc7b829f98cd7
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 

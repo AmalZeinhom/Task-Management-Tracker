@@ -7,6 +7,8 @@ import { Dashboard } from "./Pages/Dashboard.js";
 import { ForgetPassword } from "./Pages/ForgetPassword.js";
 import { ResetPassword } from "./Pages/ResetPassword.js";
 import Layout from "./Components/Layout.js";
+import AddNewProject from "./Pages/Subpages/AddNewProject.js";
+import ProjectsList from "./Pages/Subpages/ProjectsList.js";
 
 const routes = createBrowserRouter([
   {
@@ -19,6 +21,15 @@ const routes = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/add-new-project",
+        element: <AddNewProject />,
+      },
+
+      {
+        path: "/projects-list",
+        element: <ProjectsList />,
       },
     ],
   },
