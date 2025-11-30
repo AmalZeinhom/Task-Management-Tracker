@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import { ClipboardPenLine, X } from "lucide-react";
+import { ClipboardPenLine, X, PencilLine } from "lucide-react";
 import api from "../../Components/API/axiosInstance";
 
 type Project = {
@@ -132,7 +132,7 @@ export default function ProjectsList() {
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="px-8 py-4 bg-brightness-primary shadow-lg rounded-2xl flex justify-between items-center hover:shadow-xl transition cursor-pointer"
+                  className="px-8 py-4 bg-brightness-primary shadow-lg rounded-2xl flex justify-between items-center hover:shadow-xl transition"
                 >
                   <div className="flex items-center gap-3">
                     <ClipboardPenLine size={20} className="text-gray-600" />
@@ -159,18 +159,36 @@ export default function ProjectsList() {
                     {project.description}
                   </p>
 
-                  <motion.button
-                    whileHover={{
-                      scale: 1.1,
-                      rotate: 90,
-                      backgroundColor: "#dc2626",
-                      transition: { duration: 0.3 },
-                    }}
-                    onClick={() => deleteProject(project.id)}
-                    className="p-2 bg-red-400 text-white text-sm rounded-full"
-                  >
-                    <X size={20} />
-                  </motion.button>
+                  <div>
+                    <motion.button
+                      whileHover={{
+                        scale: 1.1,
+                        backgroundColor: "#3b82f6",
+                        transition: { duration: 0.3 },
+                        cursor: "pointer",
+                      }}
+                      onClick={() =>
+                        navigate(`/projects/${project.id}/edit-project`)
+                      }
+                      className="p-2 bg-blue-400 text-white text-sm rounded-full mr-2"
+                    >
+                      <PencilLine size={20} />
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{
+                        scale: 1.1,
+                        rotate: 90,
+                        backgroundColor: "#dc2626",
+                        transition: { duration: 0.3 },
+                        cursor: "pointer",
+                      }}
+                      onClick={() => deleteProject(project.id)}
+                      className="p-2 bg-red-400 text-white text-sm rounded-full"
+                    >
+                      <X size={20} />
+                    </motion.button>
+                  </div>
                 </div>
               ))}
             </div>

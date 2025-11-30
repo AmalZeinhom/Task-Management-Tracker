@@ -9,6 +9,7 @@ import { ResetPassword } from "./Pages/ResetPassword.js";
 import Layout from "./Components/Layout.js";
 import AddNewProject from "./Pages/Subpages/AddNewProject.js";
 import ProjectsList from "./Pages/Subpages/ProjectsList.js";
+import EditProject from "./Pages/Subpages/EditProject.js";
 
 const routes = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ const routes = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "/",
+        path: "/home",
         element: <Home />,
       },
       {
@@ -31,6 +32,11 @@ const routes = createBrowserRouter([
         path: "/projects-list",
         element: <ProjectsList />,
       },
+
+      {
+        path: "/projects/:projectId/edit-project",
+        element: <EditProject />,
+      },
     ],
   },
 
@@ -39,7 +45,7 @@ const routes = createBrowserRouter([
     element: <SignUp />,
   },
   {
-    path: "/login",
+    path: "/",
     element: <LogIn />,
   },
 
