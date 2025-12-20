@@ -71,12 +71,10 @@ export default function AddNewProject() {
       reset();
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        console.log("Axios Error Response:", error.response);
         toast.error(
           `Failed: ${error.response?.status} ${error.response?.data?.message || ""}`
         );
       } else {
-        console.log("Unexpected Error:", error);
         toast.error("Unknown Error Occurred");
       }
     }

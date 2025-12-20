@@ -10,6 +10,8 @@ import Layout from "./Components/Layout.js";
 import AddNewProject from "./Pages/Subpages/AddNewProject.js";
 import ProjectsList from "./Pages/Subpages/ProjectsList.js";
 import EditProject from "./Pages/Subpages/EditProject.js";
+import ProjectMembers from "./Pages/ProjectMembers.js";
+import InviteMembers from "./Pages/Subpages/InviteMembers.js";
 
 const routes = createBrowserRouter([
   {
@@ -27,15 +29,28 @@ const routes = createBrowserRouter([
         path: "/add-new-project",
         element: <AddNewProject />,
       },
-
       {
         path: "/projects-list",
         element: <ProjectsList />,
       },
-
       {
-        path: "/projects/:projectId/edit-project",
+        path: "/invite-members",
+        element: <InviteMembers />,
+      },
+    ],
+  },
+
+  {
+    path: "/projects/:projectId",
+    element: <Layout />,
+    children: [
+      {
+        path: "edit-project",
         element: <EditProject />,
+      },
+      {
+        path: "project_members",
+        element: <ProjectMembers />,
       },
     ],
   },

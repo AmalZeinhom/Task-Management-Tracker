@@ -7,14 +7,17 @@ import {
   ChevronRight,
   Plus,
   CalendarCheck2,
+  User2Icon,
 } from "lucide-react";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
+
+  const { projectId } = useParams();
 
   const menuItems = [
     {
@@ -32,6 +35,11 @@ export default function Sidebar() {
           icon: <ListChecks size={20} />,
           path: "/projects-list",
         },
+        {
+          name: "Project Members",
+          icon: <User2Icon size={20} />,
+          path: `/projects/${projectId}/project_members`,
+        },
       ],
     },
     { name: "My Tasks", icon: <CalendarCheck2 size={20} />, path: "/my-tasks" },
@@ -40,7 +48,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile toggle */}
       <button
         className="lg:hidden fixed top-4 left-4 z-50 text-blue-darkBlue"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -57,17 +64,27 @@ export default function Sidebar() {
         <nav className="mt-6 flex flex-col gap-2 px-3">
           {menuItems.map((item) => (
             <div key={item.name} className="flex flex-col">
-              <div
-                className="flex items-center gap-3 p-3 rounded-md hover:bg-blue-700 hover:text-white transition-colors cursor-pointer"
-                onClick={() => {
-                  if (item.hasSubmenu) {
-                    setIsProjectsOpen(!isProjectsOpen);
-                  }
-                }}
-              >
-                {item.icon}
-                {!isCollapsed && <span>{item.name}</span>}
-              </div>
+              {item.path && !item.hasSubmenu ? (
+                <Link
+                  to={item.path}
+                  className="flex items-center gap-3 p-3 rounded-md hover:bg-blue-700 hover:text-white transition-colors"
+                >
+                  {item.icon}
+                  {!isCollapsed && <span>{item.name}</span>}
+                </Link>
+              ) : (
+                <div
+                  className="flex items-center gap-3 p-3 rounded-md hover:bg-blue-700 hover:text-white transition-colors cursor-pointer"
+                  onClick={() => {
+                    if (item.hasSubmenu) {
+                      setIsProjectsOpen(!isProjectsOpen);
+                    }
+                  }}
+                >
+                  {item.icon}
+                  {!isCollapsed && <span>{item.name}</span>}
+                </div>
+              )}
 
               {item.hasSubmenu && isProjectsOpen && !isCollapsed && (
                 <div className="ml-6 flex flex-col gap-1 mt-1">
