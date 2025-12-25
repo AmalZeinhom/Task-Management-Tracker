@@ -10,14 +10,7 @@ interface FormInputProps {
   icon?: React.ReactNode;
 }
 
-const FormInput: React.FC<FormInputProps> = ({
-  label,
-  id,
-  type = "text",
-  field,
-  error,
-  icon,
-}) => {
+const FormInput: React.FC<FormInputProps> = ({ label, id, type = "text", field, error, icon }) => {
   return (
     <div>
       <div className="relative w-full">
@@ -36,9 +29,7 @@ const FormInput: React.FC<FormInputProps> = ({
         )}
       </div>
 
-      {error && (
-        <p className="text-red-400 text-xs mt-1 text-left">{error.message}</p>
-      )}
+      {error && <p className="text-red-400 text-xs mt-1 text-left">{error.message}</p>}
     </div>
   );
 };

@@ -14,14 +14,14 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 const schema = z.object({
-  email: z.email("Please enter a valid email address"),
+  email: z.email("Please enter a valid email address")
 });
 
 type FormData = z.infer<typeof schema>;
 
 export function ForgetPassword() {
   const { handleSubmit, control } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema)
   });
 
   const navigate = useNavigate();
@@ -59,9 +59,7 @@ export function ForgetPassword() {
     }
 
     //Email Sending
-    toast.success(
-      "If an account exists with this email, we’ve sent a password reset link."
-    );
+    toast.success("If an account exists with this email, we’ve sent a password reset link.");
 
     setTrials((prev) => prev + 1);
     setCountDown(300);
@@ -74,19 +72,16 @@ export function ForgetPassword() {
       const supabase = createClient(supabaseUrl, supabaseKey);
 
       const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: "http://localhost:5173/reset-password",
+        redirectTo: "http://localhost:5173/reset-password"
       });
 
       if (error) {
         throw new Error(error.message);
       }
 
-      toast.success(
-        "If an account exists with this email, a password reset link has been sent."
-      );
+      toast.success("If an account exists with this email, a password reset link has been sent.");
     } catch (err: any) {
-      const errorMessage =
-        err.message || "Failed to send reset email. Please try again.";
+      const errorMessage = err.message || "Failed to send reset email. Please try again.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -119,15 +114,10 @@ export function ForgetPassword() {
             Forgot Your Password?
           </h1>
           <p className="text-gray-500 text-sm mb-5 text-center md:text-left">
-            Enter your email address below, and we’ll send you a link to reset
-            your password.
+            Enter your email address below, and we’ll send you a link to reset your password.
           </p>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-            className="space-y-5"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
             <Controller
               name="email"
               defaultValue=""
@@ -174,14 +164,13 @@ export function ForgetPassword() {
               >
                 {disabled ? (
                   <>
-                    <FaStopwatch className="inline mr-1" /> Resend Email Will be
-                    available in {formatTime(countDown)}
+                    <FaStopwatch className="inline mr-1" /> Resend Email Will be available in{" "}
+                    {formatTime(countDown)}
                   </>
                 ) : (
                   <>
                     {" "}
-                    <FaEnvelope className="inline mr-1" /> Don’t receive an
-                    email? Resend
+                    <FaEnvelope className="inline mr-1" /> Don’t receive an email? Resend
                   </>
                 )}
               </button>

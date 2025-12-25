@@ -19,15 +19,12 @@ export default function EditProject() {
   useEffect(() => {
     async function fetchProjectData() {
       try {
-        const response = await api.get(
-          `${supabaseUrl}/rest/v1/projects?id=eq.${projectId}`,
-          {
-            headers: {
-              apikey: supabaseKey,
-              Authorization: `Bearer ${accessToken}`,
-            },
+        const response = await api.get(`${supabaseUrl}/rest/v1/projects?id=eq.${projectId}`, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${accessToken}`
           }
-        );
+        });
 
         if (response.data.length > 0) {
           const project = response.data[0];
@@ -51,14 +48,14 @@ export default function EditProject() {
         `${supabaseUrl}/rest/v1/projects?id=eq.${projectId}`,
         {
           name: title,
-          description,
+          description
         },
         {
           headers: {
             apikey: supabaseKey,
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
+            "Content-Type": "application/json"
+          }
         }
       );
 
@@ -81,15 +78,10 @@ export default function EditProject() {
         className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-7xl bg-brightness-light rounded-2xl p-8 sm:p-8 md:p-10"
       >
         <div className="flex flex-wrap gap-2 mx-auto mb-6 text-sm">
-          <Link
-            to={"/projects-list"}
-            className="cursor-pointer text-gray-500 hover:text-gray-700"
-          >
+          <Link to={"/projects-list"} className="cursor-pointer text-gray-500 hover:text-gray-700">
             Projects /
           </Link>
-          <span className="cursor-pointer text-gray-500 hover:text-gray-700">
-            Edit Project
-          </span>
+          <span className="cursor-pointer text-gray-500 hover:text-gray-700">Edit Project</span>
         </div>
 
         <form

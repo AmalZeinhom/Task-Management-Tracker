@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
-import { createClient } from "@supabase/supabase-js";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Navbar() {
   const [user, setUser] = useState({
     name: "",
-    job_title: "",
+    job_title: ""
   });
 
   const [dropDownOpen, setDropdownOpen] = useState(false);
@@ -28,23 +26,26 @@ export default function Navbar() {
           return;
         }
 
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser(access_token);
-
-        if (error) throw error;
-        if (!user) {
-          toast.error("User not found");
-          return;
+        const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+          method: "GET",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${access_token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch user");
         }
 
+        const user = await response.json();
+
         setUser({
-          name: user.user_metadata?.name,
-          job_title: user.user_metadata?.job_title || "Member",
+          name: user.user_metadata?.name || "",
+          job_title: user.user_metadata?.job_title || "Member"
         });
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error(error);
+        toast.error("Failed to load user data");
       }
     };
 
@@ -73,8 +74,8 @@ export default function Navbar() {
         method: "POST",
         headers: {
           apikey: supabaseKey,
-          Authorization: `Bearer ${access_token}`,
-        },
+          Authorization: `Bearer ${access_token}`
+        }
       });
 
       if (!response.ok) {
