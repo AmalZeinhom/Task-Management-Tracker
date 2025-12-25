@@ -15,7 +15,7 @@ const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 const signUpSchema = z.object({
   email: z.email("Email is required"),
   password: z.string().nonempty("Password is required"),
-  rememberME: z.boolean().optional(),
+  rememberME: z.boolean().optional()
 });
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
@@ -26,8 +26,8 @@ export function LogIn() {
     defaultValues: {
       email: "",
       password: "",
-      rememberME: false,
-    },
+      rememberME: false
+    }
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -43,8 +43,8 @@ export function LogIn() {
         {
           headers: {
             "Content-Type": "application/json",
-            apikey: supabasekey,
-          },
+            apikey: supabasekey
+          }
         }
       );
 
@@ -60,21 +60,21 @@ export function LogIn() {
         Cookies.set("access_token", access_token, {
           expires: 7,
           secure: true,
-          sameSite: "strict",
+          sameSite: "strict"
         });
         Cookies.set("refresh_token", refresh_token, {
           expires: 7,
           secure: true,
-          sameSite: "strict",
+          sameSite: "strict"
         });
       } else {
         Cookies.set("access_token", access_token, {
           secure: true,
-          sameSite: "strict",
+          sameSite: "strict"
         });
         Cookies.set("refresh_token", refresh_token, {
           secure: true,
-          sameSite: "strict",
+          sameSite: "strict"
         });
       }
 
@@ -97,18 +97,12 @@ export function LogIn() {
 
       <div className="flex flex-col justify-center items-center p-8">
         <div className="w-full max-w-md bg-brightness-primary p-8 rounded-xl shadow-2xl">
-          <h1 className="text-3xl font-bold text-dark mb-2 text-center">
-            Welcome Back!
-          </h1>
+          <h1 className="text-3xl font-bold text-dark mb-2 text-center">Welcome Back!</h1>
           <p className="text-xs text-dark mb-6 text-center">
             Welcome back! Please enter your details.
           </p>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
             <Controller
               name="email"
               control={control}
@@ -136,10 +130,7 @@ export function LogIn() {
                   field={field}
                   error={fieldState.error}
                   icon={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                    >
+                    <button type="button" onClick={() => setShowPassword((prev) => !prev)}>
                       {showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
                     </button>
                   }
@@ -161,10 +152,7 @@ export function LogIn() {
                         onChange={(e) => field.onChange(e.target.checked)}
                         className="cursor-pointer"
                       />
-                      <label
-                        htmlFor="rememberME"
-                        className="text-sm text-gray-500 cursor-pointer"
-                      >
+                      <label htmlFor="rememberME" className="text-sm text-gray-500 cursor-pointer">
                         Remember me?
                       </label>
                     </div>
@@ -172,10 +160,7 @@ export function LogIn() {
                 )}
               />
 
-              <NavLink
-                to="/forget-password"
-                className="text-sm text-gray-500 hover:text-gray-800"
-              >
+              <NavLink to="/forget-password" className="text-sm text-gray-500 hover:text-gray-800">
                 Forgot password?
               </NavLink>
             </div>
@@ -189,10 +174,7 @@ export function LogIn() {
 
             <p className="text-sm text-gray-600 text-center">
               Don’t have an account?
-              <NavLink
-                to="/signup"
-                className="underline underline-offset-2 ms-2"
-              >
+              <NavLink to="/signup" className="underline underline-offset-2 ms-2">
                 Sign up for free
               </NavLink>
             </p>

@@ -17,12 +17,9 @@ const signUpSchema = z
       .string()
       .min(3, "Name must be at least 3 characters")
       .max(50, "Name must be at most 50 characters")
-      .regex(
-        /^[A-Za-z\u0600-\u06FF ]+$/,
-        "Name can only contain letters and spaces"
-      )
+      .regex(/^[A-Za-z\u0600-\u06FF ]+$/, "Name can only contain letters and spaces")
       .refine((val) => !/\s{2,}/.test(val), {
-        message: "Name cannot contain multiple consecutive spaces",
+        message: "Name cannot contain multiple consecutive spaces"
       }),
     email: z.email("Invalid email address"),
     job_title: z.string().optional(),
@@ -35,18 +32,18 @@ const signUpSchema = z
       .regex(/[0-9]/, "Must contain at least one number")
       .regex(/[!@#$%^&*]/, "Must contain at least one special character")
       .refine((val) => !/\s/.test(val), {
-        message: "Password cannot contain spaces",
+        message: "Password cannot contain spaces"
       }),
     confirmPassword: z.string().refine((val) => !/\s/.test(val), {
-      message: "Please confirm your password",
+      message: "Please confirm your password"
     }),
     terms: z.boolean().refine((val) => val === true, {
-      message: "You must accept terms & conditions",
-    }),
+      message: "You must accept terms & conditions"
+    })
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords does not match",
-    path: ["confirmPassword"],
+    path: ["confirmPassword"]
   });
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
@@ -60,8 +57,8 @@ export function SignUp() {
       job_title: "",
       password: "",
       confirmPassword: "",
-      terms: false,
-    },
+      terms: false
+    }
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -73,29 +70,30 @@ export function SignUp() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apikey: supabasekey,
+          apikey: supabasekey
         },
         body: JSON.stringify({
           email: data.email,
           password: data.password,
           data: {
             name: data.name,
-            job_title: data.job_title || "",
-          },
-        }),
+            department: data.job_title || undefined
+          }
+        })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Something went wrong!");
       }
+
       const result = await response.json();
-      console.error("Signup successful:", result);
+      console.log("Signup successful:", result);
       toast.success("Account created successfully");
       navigate("/login");
     } catch (error: any) {
-      console.error("Error during regiteration:", error.message);
-      toast.error(`${error.message}`);
+      console.error("Error during registration:", error.message);
+      toast.error(error.message || "Something went wrong!");
     }
   };
 
@@ -107,9 +105,7 @@ export function SignUp() {
 
       <div className="flex flex-col justify-center items-center p-8">
         <div className="w-full max-w-md bg-brightness-primary p-8 rounded-xl shadow-2xl">
-          <h1 className="text-3xl font-bold text-dark mb-2 text-center">
-            Register
-          </h1>
+          <h1 className="text-3xl font-bold text-dark mb-2 text-center">Register</h1>
           <p className="text-xs text-dark mb-6 text-center">
             Create a free account or{" "}
             <NavLink to="/login" className="text-cyan-600">
@@ -117,11 +113,7 @@ export function SignUp() {
             </NavLink>
           </p>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
             <Controller
               name="name"
               control={control}
@@ -181,10 +173,7 @@ export function SignUp() {
                   field={field}
                   error={fieldState.error}
                   icon={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                    >
+                    <button type="button" onClick={() => setShowPassword((prev) => !prev)}>
                       {showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
                     </button>
                   }
@@ -222,10 +211,7 @@ export function SignUp() {
                         onChange={(e) => field.onChange(e.target.checked)}
                         className="cursor-pointer"
                       />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm text-gray-600 cursor-pointer"
-                      >
+                      <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
                         Terms & Conditions
                       </label>
                     </div>
@@ -249,10 +235,7 @@ export function SignUp() {
 
             <p className="text-sm text-gray-600 text-center">
               Already have an account?
-              <NavLink
-                to="/login"
-                className="underline underline-offset-2 ms-2"
-              >
+              <NavLink to="/login" className="underline underline-offset-2 ms-2">
                 Login
               </NavLink>
             </p>
