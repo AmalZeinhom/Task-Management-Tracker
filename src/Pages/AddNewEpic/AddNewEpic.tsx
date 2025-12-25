@@ -88,7 +88,7 @@ export default function AddNewEpic() {
         {
           title: data.title,
           description: data.description,
-          assignee: data.assignee,
+          assignee_id: data.assignee,
           deadline: data.deadline ? new Date(data.deadline).toISOString() : null,
           project_id: projectId
         },
