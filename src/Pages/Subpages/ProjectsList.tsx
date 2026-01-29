@@ -125,61 +125,67 @@ export default function ProjectsList() {
                 <div
                   key={project.id}
                   onClick={() => navigate(`/projects/${project.id}/members`)}
-                  className="cursor-pointer px-8 py-4 bg-brightness-primary shadow-lg rounded-2xl flex justify-between items-center hover:shadow-xl transition"
+                  className="cursor-pointer px-6 py-4 bg-brightness-primary shadow-lg rounded-2xl hover:shadow-xl transition"
                 >
-                  <div className="flex items-center gap-3">
-                    <ClipboardPenLine size={20} className="text-gray-600" />
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-start sm:items-center gap-3 min-w-0">
+                      <ClipboardPenLine size={20} className="text-gray-600 flex-shrink-0" />
 
-                    <div className="flex flex-col">
-                      <h2 className="text-xl font-semibold text-blue-darkBlue mb-1">
-                        {project.name}
-                      </h2>
+                      <div className="flex flex-col min-w-0">
+                        <h2 className="text-lg sm:text-xl font-semibold text-blue-darkBlue mb-1 truncate">
+                          {project.name}
+                        </h2>
 
-                      <p className="text-gray-500 text-xs">
-                        {new Date(project.created_at).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric"
-                        })}
+                        <p className="text-gray-500 text-xs">
+                          {new Date(project.created_at).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric"
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex-1">
+                      <p className="text-gray-700 text-sm mb-2 line-clamp-2">
+                        {project.description}
                       </p>
                     </div>
-                  </div>
 
-                  <p className="text-gray-700 text-sm mb-2">{project.description}</p>
+                    <div className="flex-shrink-0 flex items-center gap-2">
+                      <motion.button
+                        whileHover={{
+                          scale: 1.1,
+                          backgroundColor: "#3b82f6",
+                          transition: { duration: 0.3 },
+                          cursor: "pointer"
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/projects/${project.id}/edit-project`);
+                        }}
+                        className="p-2 bg-blue-400 text-white text-sm rounded-full mr-2"
+                      >
+                        <PencilLine size={20} />
+                      </motion.button>
 
-                  <div>
-                    <motion.button
-                      whileHover={{
-                        scale: 1.1,
-                        backgroundColor: "#3b82f6",
-                        transition: { duration: 0.3 },
-                        cursor: "pointer"
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/projects/${project.id}/edit-project`);
-                      }}
-                      className="p-2 bg-blue-400 text-white text-sm rounded-full mr-2"
-                    >
-                      <PencilLine size={20} />
-                    </motion.button>
-
-                    <motion.button
-                      whileHover={{
-                        scale: 1.1,
-                        rotate: 90,
-                        backgroundColor: "#dc2626",
-                        transition: { duration: 0.3 },
-                        cursor: "pointer"
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteProject(project.id);
-                      }}
-                      className="p-2 bg-red-400 text-white text-sm rounded-full"
-                    >
-                      <X size={20} />
-                    </motion.button>
+                      <motion.button
+                        whileHover={{
+                          scale: 1.1,
+                          rotate: 90,
+                          backgroundColor: "#dc2626",
+                          transition: { duration: 0.3 },
+                          cursor: "pointer"
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteProject(project.id);
+                        }}
+                        className="p-2 bg-red-400 text-white text-sm rounded-full"
+                      >
+                        <X size={20} />
+                      </motion.button>
+                    </div>
                   </div>
                 </div>
               ))}

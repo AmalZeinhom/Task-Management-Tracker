@@ -10,9 +10,9 @@ export const showLogoutToast = ({ onConfirm }: LogoutToastProps) => {
       className={`
         bg-white shadow-md rounded-lg p-3
         flex items-center justify-between gap-3
-        w-64
+        w-full max-w-xs sm:max-w-sm
         ${t.visible ? "animate-enter" : "animate-leave"}
-      `}
+        `}
     >
       <span className="text-sm text-gray-700">Are you sure you want to logout?</span>
 

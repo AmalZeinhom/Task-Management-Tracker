@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -10,18 +10,20 @@ export default function Layout() {
 
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
 
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
   return (
     <>
       {shouldHideLayout ? (
         <Outlet />
       ) : (
         <div className="h-screen grid grid-rows-[auto,1fr] overflow-hidden bg-gray-50">
-          <Navbar />
+          <Navbar setIsMobileOpen={setIsMobileOpen} />
 
-          <div className="grid grid-cols-[auto_1fr] overflow-hidden">
-            <Sidebar />
+          <div className="grid lg:grid-cols-[auto_1fr] grid-cols-1 overflow-hidden min-h-0">
+            <Sidebar isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-            <main className="p-6 overflow-y-auto">
+            <main className="p-4 sm:p-6 md:p-8 overflow-y-auto min-h-0">
               <Outlet />
             </main>
           </div>

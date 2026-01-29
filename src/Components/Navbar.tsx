@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Menu } from "lucide-react";
 import logo from "../assets/logo.png";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -6,7 +7,7 @@ import toast from "react-hot-toast";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
-export default function Navbar() {
+export default function Navbar({ setIsMobileOpen }: { setIsMobileOpen?: (v: boolean) => void }) {
   const [user, setUser] = useState({ name: "", job_title: "" });
 
   const refreshAccessToken = async () => {
@@ -84,24 +85,36 @@ export default function Navbar() {
     : "";
 
   return (
-    <nav className="w-full bg-brightness-primary shadow-xl py-4 px-6 sm:px-8 md:px-12 flex justify-between items-center flex-wrap gap-3 z-50">
-      <div className="flex items-center gap-3 sm:gap-4 pl-6">
-        <img src={logo} className="w-9 sm:w-10 h-auto" alt="Task Tracker" />
-        <h1 className="text-xl sm:text-2xl font-bold text-blue-darkBlue whitespace-nowrap">
+    <nav className="w-full bg-brightness-primary shadow-xl py-3 sm:py-4 px-4 sm:px-6 md:px-12 flex items-center z-50">
+      <div className="flex items-center gap-3 sm:gap-4 pl-0 sm:pl-6 flex-shrink-0">
+        <button
+          className="lg:hidden mr-2 p-2 rounded-md text-blue-darkBlue hover:bg-white/60"
+          onClick={() => setIsMobileOpen && setIsMobileOpen(true)}
+          aria-label="Open navigation"
+        >
+          <Menu size={20} />
+        </button>
+
+        <img src={logo} className="w-8 sm:w-10 h-auto" alt="Task Tracker" />
+        <h1 className="hidden sm:block text-lg sm:text-xl md:text-2xl font-bold text-blue-darkBlue whitespace-nowrap">
           Task Management
         </h1>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="text-right hidden md:block ">
-          <h2 className="text-sm sm:text-base font-semibold text-gray-600 truncate max-w-[120px] sm:max-w-[200px]">
+      <div className="flex-1" />
+
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div className="text-right hidden md:block min-w-0">
+          <h2 className="text-sm sm:text-base font-semibold text-gray-600 truncate max-w-[140px] sm:max-w-[220px]">
             {user.name || "Loading..."}
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">{user.job_title}</p>
+          <p className="text-xs sm:text-sm text-gray-500 truncate max-w-[140px] sm:max-w-[220px]">
+            {user.job_title}
+          </p>
         </div>
 
-        <div className="relative">
-          <div className="bg-blue-900 text-white font-semibold w-9 h-9 rounded-full sm:w-10 sm:h-10 flex items-center justify-center text-base sm-text-lg focus:outline-none">
+        <div className="relative flex-shrink-0">
+          <div className="bg-blue-900 text-white font-semibold w-9 h-9 rounded-full sm:w-10 sm:h-10 flex items-center justify-center text-base sm:text-lg focus:outline-none">
             {initials || "—"}
           </div>
         </div>

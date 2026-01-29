@@ -96,7 +96,7 @@ export default function ProjectMembers() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-8 flex items-center justify-between"
+            className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
           >
             <div className="flex flex-wrap gap-2 text-sm">
               <Link
@@ -110,9 +110,12 @@ export default function ProjectMembers() {
               </span>
             </div>
 
-            <button className="bg-blue-darkBlue text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">
+            <Link
+              to="/invite-members"
+              className="w-full sm:w-auto bg-blue-darkBlue text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 text-center"
+            >
               Invite Members
-            </button>
+            </Link>
           </motion.div>
 
           <div className="w-full bg-brightness-primary py-10 px-5 sm:py-8 sm:px-6 rounded-2xl shadow-2xl">

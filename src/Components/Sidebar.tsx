@@ -1,17 +1,14 @@
 import {
-  Menu,
   Folder,
   ListChecks,
   User,
-  ChevronLeft,
-  ChevronRight,
   Plus,
   CalendarCheck2,
   User2Icon,
   MessageCircleMore,
   LogOut
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { showLogoutToast } from "./Common/LogoutPopUp";
 import Cookies from "js-cookie";
@@ -20,10 +17,17 @@ import toast from "react-hot-toast";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
-export default function Sidebar() {
+export default function Sidebar({
+  isMobileOpen,
+  setIsMobileOpen
+}: {
+  isMobileOpen?: boolean;
+  setIsMobileOpen?: (v: boolean) => void;
+}) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const ignoreClickRef = useRef(false);
 
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -58,16 +62,8 @@ export default function Sidebar() {
       icon: <Folder size={20} />,
       hasSubmenu: true,
       submenu: [
-        {
-          name: "Add New Project",
-          icon: <Plus size={20} />,
-          path: "/add-new-project"
-        },
-        {
-          name: "Projects List",
-          icon: <ListChecks size={20} />,
-          path: "/projects-list"
-        },
+        { name: "Add New Project", icon: <Plus size={20} />, path: "/add-new-project" },
+        { name: "Projects List", icon: <ListChecks size={20} />, path: "/projects-list" },
         ...(projectId
           ? [
               {
@@ -93,33 +89,48 @@ export default function Sidebar() {
   ];
 
   React.useEffect(() => {
-    if (projectId) {
-      setIsProjectsOpen(true);
-    }
+    if (projectId) setIsProjectsOpen(true);
   }, [projectId]);
+
+  useEffect(() => {
+    function handleDocumentMouseDown(e: MouseEvent) {
+      const el = sidebarRef.current;
+      if (!el) return;
+
+      if (ignoreClickRef.current) {
+        ignoreClickRef.current = false;
+        return;
+      }
+
+      if (el.contains(e.target as Node)) {
+        setIsCollapsed(false);
+      } else {
+        setIsCollapsed(true);
+        if (isMobileOpen) setIsMobileOpen?.(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleDocumentMouseDown);
+    return () => document.removeEventListener("mousedown", handleDocumentMouseDown);
+  }, [isMobileOpen, setIsMobileOpen]);
 
   return (
     <>
-      <button
-        className="lg:hidden fixed top-4 left-4 z-50 text-blue-darkBlue"
-        onClick={() => setIsMobileOpen(true)}
-      >
-        <Menu size={28} />
-      </button>
-
       <aside
-        className={`bg-brightness-primary text-blue-darkBlue flex flex-col shadow-xl transition-all duration-300 
-        ${isCollapsed ? "w-20" : "w-64"} 
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} 
-        lg:translate-x-0 z-40`}
+        ref={sidebarRef}
+        className={`bg-brightness-primary text-blue-darkBlue flex flex-col shadow-xl fixed lg:static top-14 lg:top-0 left-0 h-[calc(100vh-3.5rem)] lg:h-full overflow-y-auto
+          transition-all duration-300
+          ${isCollapsed ? "w-20" : "w-64"}
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 z-40`}
+        aria-hidden={!isMobileOpen && typeof window !== "undefined" && window.innerWidth < 1024}
       >
-        <nav className=" mt-6 flex flex-col gap-2 px-3">
+        <nav className="mt-6 flex flex-col gap-2 px-3">
           {menuItems.map((item) => (
             <div key={item.name}>
               {item.path && !item.hasSubmenu ? (
                 <Link
                   to={item.path}
-                  onClick={() => setIsMobileOpen(false)}
+                  onClick={() => setIsMobileOpen?.(false)}
                   className="flex items-center gap-3 p-3 rounded-md hover:bg-blue-700 hover:text-white transition-colors"
                 >
                   {item.icon}
@@ -128,11 +139,7 @@ export default function Sidebar() {
               ) : (
                 <div
                   className="flex items-center gap-3 p-3 rounded-md hover:bg-blue-700 hover:text-white transition-colors cursor-pointer"
-                  onClick={() => {
-                    if (item.hasSubmenu) {
-                      setIsProjectsOpen(!isProjectsOpen);
-                    }
-                  }}
+                  onClick={() => item.hasSubmenu && setIsProjectsOpen(!isProjectsOpen)}
                 >
                   {item.icon}
                   {!isCollapsed && <span>{item.name}</span>}
@@ -147,7 +154,7 @@ export default function Sidebar() {
                       to={sub.path}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setIsMobileOpen(false);
+                        setIsMobileOpen?.(false);
                       }}
                       className="flex items-center gap-2 p-2 rounded-md hover:bg-blue-600 hover:text-white transition-colors"
                     >
@@ -161,23 +168,10 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        <div className="flex-grow" />
-
-        <div
-          className="absolute bottom-6 right-0 transform translate-x-1/2 bg-blue-darkBlue text-white rounded-full p-2 cursor-pointer hover:bg-blue-500 transition"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-        </div>
-
-        <div className="px-3 pb-16 flex flex-col gap-3">
+        <div className="absolute bottom-6 w-full px-3">
           <button
-            onClick={() =>
-              showLogoutToast({
-                onConfirm: handleLogOut
-              })
-            }
-            className="flex items-center gap-3 p-3 rounded-md text-red-600 hover:bg-red-500 hover:text-white transition-colors"
+            onClick={() => showLogoutToast({ onConfirm: handleLogOut })}
+            className="flex items-center gap-3 w-full p-3 rounded-md text-red-600 hover:bg-red-500 hover:text-white transition-colors"
           >
             <LogOut size={20} />
             {!isCollapsed && <span>Logout</span>}
@@ -188,7 +182,8 @@ export default function Sidebar() {
       {isMobileOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-30 lg:hidden"
-          onClick={() => setIsMobileOpen(false)}
+          onClick={() => setIsMobileOpen?.(false)}
+          aria-hidden="true"
         />
       )}
     </>
