@@ -8,10 +8,17 @@ import {
   Plus,
   CalendarCheck2,
   User2Icon,
-  MessageCircleMore
+  MessageCircleMore,
+  LogOut
 } from "lucide-react";
 import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { showLogoutToast } from "./Common/LogoutPopUp";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -19,6 +26,31 @@ export default function Sidebar() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
 
   const { projectId } = useParams();
+  const navigate = useNavigate();
+
+  const handleLogOut = async () => {
+    try {
+      const access_token = Cookies.get("access_token");
+
+      if (access_token) {
+        await fetch(`${supabaseUrl}/auth/v1/logout`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${access_token}`
+          }
+        });
+      }
+
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Logout failed, please try again.");
+    }
+  };
 
   const menuItems = [
     {
@@ -70,23 +102,24 @@ export default function Sidebar() {
     <>
       <button
         className="lg:hidden fixed top-4 left-4 z-50 text-blue-darkBlue"
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        onClick={() => setIsMobileOpen(true)}
       >
         <Menu size={28} />
       </button>
 
       <aside
-        className={`bg-brightness-primary text-blue-darkBlue shadow-xl transition-all duration-300 
+        className={`bg-brightness-primary text-blue-darkBlue flex flex-col shadow-xl transition-all duration-300 
         ${isCollapsed ? "w-20" : "w-64"} 
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} 
         lg:translate-x-0 z-40`}
       >
         <nav className=" mt-6 flex flex-col gap-2 px-3">
           {menuItems.map((item) => (
-            <div key={item.name} className="flex flex-col">
+            <div key={item.name}>
               {item.path && !item.hasSubmenu ? (
                 <Link
                   to={item.path}
+                  onClick={() => setIsMobileOpen(false)}
                   className="flex items-center gap-3 p-3 rounded-md hover:bg-blue-700 hover:text-white transition-colors"
                 >
                   {item.icon}
@@ -112,7 +145,10 @@ export default function Sidebar() {
                     <Link
                       key={sub.name}
                       to={sub.path}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMobileOpen(false);
+                      }}
                       className="flex items-center gap-2 p-2 rounded-md hover:bg-blue-600 hover:text-white transition-colors"
                     >
                       {sub.icon}
@@ -125,11 +161,27 @@ export default function Sidebar() {
           ))}
         </nav>
 
+        <div className="flex-grow" />
+
         <div
           className="absolute bottom-6 right-0 transform translate-x-1/2 bg-blue-darkBlue text-white rounded-full p-2 cursor-pointer hover:bg-blue-500 transition"
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
           {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+        </div>
+
+        <div className="px-3 pb-16 flex flex-col gap-3">
+          <button
+            onClick={() =>
+              showLogoutToast({
+                onConfirm: handleLogOut
+              })
+            }
+            className="flex items-center gap-3 p-3 rounded-md text-red-600 hover:bg-red-500 hover:text-white transition-colors"
+          >
+            <LogOut size={20} />
+            {!isCollapsed && <span>Logout</span>}
+          </button>
         </div>
       </aside>
 

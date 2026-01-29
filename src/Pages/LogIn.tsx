@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +32,11 @@ export function LogIn() {
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = Cookies.get("access_token");
+    if (token) navigate("/dashboard");
+  }, []);
 
   const onSubmit = async (data: SignUpFormData) => {
     const { email, password } = data;

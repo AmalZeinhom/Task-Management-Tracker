@@ -125,7 +125,7 @@ export default function ProjectsList() {
                 <div
                   key={project.id}
                   onClick={() => navigate(`/projects/${project.id}/members`)}
-                  className="px-8 py-4 bg-brightness-primary shadow-lg rounded-2xl flex justify-between items-center hover:shadow-xl transition"
+                  className="cursor-pointer px-8 py-4 bg-brightness-primary shadow-lg rounded-2xl flex justify-between items-center hover:shadow-xl transition"
                 >
                   <div className="flex items-center gap-3">
                     <ClipboardPenLine size={20} className="text-gray-600" />
