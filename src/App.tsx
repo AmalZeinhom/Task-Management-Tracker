@@ -12,6 +12,8 @@ import ProjectsList from "./Pages/Subpages/ProjectsList.js";
 import EditProject from "./Pages/Subpages/EditProject.js";
 import ProjectMembers from "./Pages/ProjectMembers.js";
 import InviteMembers from "./Pages/Subpages/InviteMembers.js";
+import AddNewEpic from "./Pages/AddNewEpic/AddNewEpic.js";
+import GitEpics from "./Pages/GitEpics/GitEpics.js";
 
 const routes = createBrowserRouter([
   {
@@ -19,25 +21,25 @@ const routes = createBrowserRouter([
     children: [
       {
         path: "/dashboard",
-        element: <Dashboard />,
+        element: <Dashboard />
       },
       {
-        path: "/home",
-        element: <Home />,
+        path: "/",
+        element: <Home />
       },
       {
         path: "/add-new-project",
-        element: <AddNewProject />,
+        element: <AddNewProject />
       },
       {
         path: "/projects-list",
-        element: <ProjectsList />,
+        element: <ProjectsList />
       },
       {
         path: "/invite-members",
-        element: <InviteMembers />,
-      },
-    ],
+        element: <InviteMembers />
+      }
+    ]
   },
 
   {
@@ -46,32 +48,40 @@ const routes = createBrowserRouter([
     children: [
       {
         path: "edit-project",
-        element: <EditProject />,
+        element: <EditProject />
       },
       {
-        path: "project_members",
-        element: <ProjectMembers />,
+        path: "members",
+        element: <ProjectMembers />
       },
-    ],
+      {
+        path: "epics",
+        element: <GitEpics />
+      },
+      {
+        path: "epics/new",
+        element: <AddNewEpic />
+      }
+    ]
   },
 
   {
     path: "/signup",
-    element: <SignUp />,
+    element: <SignUp />
   },
   {
-    path: "/",
-    element: <LogIn />,
+    path: "/login",
+    element: <LogIn />
   },
 
   {
     path: "/forget-password",
-    element: <ForgetPassword />,
+    element: <ForgetPassword />
   },
   {
     path: "/reset-password",
-    element: <ResetPassword />,
-  },
+    element: <ResetPassword />
+  }
 ]);
 
 export default function App() {

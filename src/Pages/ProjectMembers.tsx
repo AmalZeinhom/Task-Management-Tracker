@@ -34,8 +34,8 @@ export default function ProjectMembers() {
           headers: {
             apikey: supabaseKey,
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
+            Authorization: `Bearer ${accessToken}`
+          }
         }
       );
 
@@ -119,7 +119,7 @@ export default function ProjectMembers() {
             <h2 className="text-xl sm:text-2xl font-semibold text-blue-darkBlue mb-2 text-start">
               Project Members
             </h2>
-            <p className="text-sm text-gray-500 mb-10 text-start">
+            <p className="text-sm text-gray-500 mb-6 text-start">
               Invite your team members to collaborate on this project.
             </p>
 
@@ -128,24 +128,30 @@ export default function ProjectMembers() {
                 key={member.id}
                 className="flex items-center justify-between bg-white rounded-lg p-4 mb-4 shadow"
               >
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <span className="bg-gray-300 rounded-full p-2 text-gray-500">
-                      {member.name?.charAt(0)?.toUpperCase() || "M"}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+                  <div className="flex items-center gap-4">
+                    <span className="bg-gray-300 rounded-full w-10 h-10 flex items-center justify-center text-gray-600 font-semibold">
+                      {member.metadata.name
+                        ? member.metadata.name
+                            .split(" ")
+                            .map((word: string) => word[0])
+                            .join("")
+                            .substring(0, 2)
+                            .toUpperCase()
+                        : "NA"}
                     </span>
-                    <span className="flex flex-col ml-4">
-                      <p className="text-xl font-semibold text-darkness-dark ">
-                        {member.name}
+                    <span className="flex flex-col">
+                      <p className="text-base font-semibold text-darkness-dark ">
+                        {member.metadata.name}
                       </p>
                       <p className="text-sm text-gray-400">{member.email}</p>
                     </span>
                   </div>
 
-                  <div className="relative flex items-center gap-3">
+                  <div className="relative flex items-center gap-2">
                     <select
                       value={member.role}
-                      disabled
-                      className="p-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-darkness-dark appearance-none"
+                      className="p-2 pr-10 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-darkness-dark appearance-none"
                     >
                       <option>{member.role}</option>
                     </select>

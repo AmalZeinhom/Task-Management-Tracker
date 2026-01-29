@@ -31,16 +31,13 @@ export default function ProjectsList() {
 
   async function fetchProjects() {
     try {
-      const response = await api.get(
-        `${supabaseUrl}/rest/v1/rpc/get_projects`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
+      const response = await api.get(`${supabaseUrl}/rest/v1/rpc/get_projects`, {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
         }
-      );
+      });
 
       if (response.status === 401) {
         toast.error("Failed to Load Projects List!");
@@ -63,8 +60,8 @@ export default function ProjectsList() {
         headers: {
           apikey: supabaseKey,
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       });
       toast.success("Project deleted successfully.");
       setProjects((prev) => prev.filter((p) => p.id !== projectId));
@@ -103,10 +100,7 @@ export default function ProjectsList() {
           {loading && (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((x) => (
-                <div
-                  key={x}
-                  className="h-32 w-full bg-gray-200 animate-pulse rounded-lg"
-                ></div>
+                <div key={x} className="h-32 w-full bg-gray-200 animate-pulse rounded-lg"></div>
               ))}
             </div>
           )}
@@ -115,9 +109,7 @@ export default function ProjectsList() {
 
           {!loading && projects.length === 0 && (
             <div className="text-center mt-10">
-              <p className="text-gray-600 text-lg mb-3">
-                You don’t have any projects yet.
-              </p>
+              <p className="text-gray-600 text-lg mb-3">You don’t have any projects yet.</p>
               <Link
                 to="/add-new-project"
                 className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-600 transition"
@@ -132,6 +124,7 @@ export default function ProjectsList() {
               {projects.map((project) => (
                 <div
                   key={project.id}
+                  onClick={() => navigate(`/projects/${project.id}/members`)}
                   className="px-8 py-4 bg-brightness-primary shadow-lg rounded-2xl flex justify-between items-center hover:shadow-xl transition"
                 >
                   <div className="flex items-center gap-3">
@@ -143,21 +136,16 @@ export default function ProjectsList() {
                       </h2>
 
                       <p className="text-gray-500 text-xs">
-                        {new Date(project.created_at).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          }
-                        )}
+                        {new Date(project.created_at).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric"
+                        })}
                       </p>
                     </div>
                   </div>
 
-                  <p className="text-gray-700 text-sm mb-2">
-                    {project.description}
-                  </p>
+                  <p className="text-gray-700 text-sm mb-2">{project.description}</p>
 
                   <div>
                     <motion.button
@@ -165,11 +153,12 @@ export default function ProjectsList() {
                         scale: 1.1,
                         backgroundColor: "#3b82f6",
                         transition: { duration: 0.3 },
-                        cursor: "pointer",
+                        cursor: "pointer"
                       }}
-                      onClick={() =>
-                        navigate(`/projects/${project.id}/edit-project`)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/projects/${project.id}/edit-project`);
+                      }}
                       className="p-2 bg-blue-400 text-white text-sm rounded-full mr-2"
                     >
                       <PencilLine size={20} />
@@ -181,9 +170,12 @@ export default function ProjectsList() {
                         rotate: 90,
                         backgroundColor: "#dc2626",
                         transition: { duration: 0.3 },
-                        cursor: "pointer",
+                        cursor: "pointer"
                       }}
-                      onClick={() => deleteProject(project.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteProject(project.id);
+                      }}
                       className="p-2 bg-red-400 text-white text-sm rounded-full"
                     >
                       <X size={20} />

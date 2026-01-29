@@ -8,6 +8,7 @@ import {
   Plus,
   CalendarCheck2,
   User2Icon,
+  MessageCircleMore
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -28,23 +29,42 @@ export default function Sidebar() {
         {
           name: "Add New Project",
           icon: <Plus size={20} />,
-          path: "/add-new-project",
+          path: "/add-new-project"
         },
         {
           name: "Projects List",
           icon: <ListChecks size={20} />,
-          path: "/projects-list",
+          path: "/projects-list"
         },
-        {
-          name: "Project Members",
-          icon: <User2Icon size={20} />,
-          path: `/projects/${projectId}/project_members`,
-        },
-      ],
+        ...(projectId
+          ? [
+              {
+                name: "Members",
+                icon: <User2Icon size={20} />,
+                path: `/projects/${projectId}/members`
+              }
+            ]
+          : [])
+      ]
     },
+    ...(projectId
+      ? [
+          {
+            name: "Epics",
+            icon: <MessageCircleMore size={20} />,
+            path: `/projects/${projectId}/epics`
+          }
+        ]
+      : []),
     { name: "My Tasks", icon: <CalendarCheck2 size={20} />, path: "/my-tasks" },
-    { name: "My Account", icon: <User size={20} />, path: "/my-account" },
+    { name: "My Account", icon: <User size={20} />, path: "/my-account" }
   ];
+
+  React.useEffect(() => {
+    if (projectId) {
+      setIsProjectsOpen(true);
+    }
+  }, [projectId]);
 
   return (
     <>
@@ -56,12 +76,12 @@ export default function Sidebar() {
       </button>
 
       <aside
-        className={`top-16 left-0 h-[calc(100vh-4rem)] bg-brightness-primary text-blue-darkBlue shadow-xl transition-all duration-300 
+        className={`bg-brightness-primary text-blue-darkBlue shadow-xl transition-all duration-300 
         ${isCollapsed ? "w-20" : "w-64"} 
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} 
         lg:translate-x-0 z-40`}
       >
-        <nav className="mt-6 flex flex-col gap-2 px-3">
+        <nav className=" mt-6 flex flex-col gap-2 px-3">
           {menuItems.map((item) => (
             <div key={item.name} className="flex flex-col">
               {item.path && !item.hasSubmenu ? (
