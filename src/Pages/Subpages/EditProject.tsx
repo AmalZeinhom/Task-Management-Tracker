@@ -63,7 +63,7 @@ export default function EditProject() {
         toast.error("Something Went Wrong!");
       }
       toast.success("Project Updated Successfully.");
-      navigate("/projects-list");
+      navigate("/projects");
     } catch (error: any) {
       toast.error("Update failed!");
       console.log(error);
@@ -78,7 +78,7 @@ export default function EditProject() {
         className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-7xl bg-brightness-light rounded-2xl p-8 sm:p-8 md:p-10"
       >
         <div className="flex flex-wrap gap-2 mx-auto mb-6 text-sm">
-          <Link to={"/projects-list"} className="cursor-pointer text-gray-500 hover:text-gray-700">
+          <Link to={"/projects"} className="cursor-pointer text-gray-500 hover:text-gray-700">
             Projects /
           </Link>
           <span className="cursor-pointer text-gray-500 hover:text-gray-700">Edit Project</span>
@@ -123,7 +123,7 @@ export default function EditProject() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               type="button"
-              onClick={() => navigate("/projects-list")}
+              onClick={() => navigate("/projects")}
               className="bg-blue-lightBlue text-white w-full sm:w-auto font-semibold px-6 py-2 rounded-xl shadow-2xl hover:bg-cyan-800 transition-colors duration-300"
             >
               Cancel

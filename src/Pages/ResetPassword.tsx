@@ -23,15 +23,15 @@ const schema = z
       .regex(/[0-9]/, "Must contain at least one number")
       .regex(/[!@#$%^&*]/, "Must contain at least one special character")
       .refine((val) => !/\s/.test(val), {
-        message: "Password cannot contain spaces",
+        message: "Password cannot contain spaces"
       }),
     confirmPassword: z.string().refine((val) => !/\s/.test(val), {
-      message: "Please confirm your password",
-    }),
+      message: "Please confirm your password"
+    })
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords does not match",
-    path: ["confirmPassword"],
+    path: ["confirmPassword"]
   });
 
 type FormData = z.infer<typeof schema>;
@@ -41,8 +41,8 @@ export function ResetPassword() {
     resolver: zodResolver(schema),
     defaultValues: {
       newPassword: "",
-      confirmPassword: "",
-    },
+      confirmPassword: ""
+    }
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -80,16 +80,14 @@ export function ResetPassword() {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           apikey: supabaseKey,
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ password: data.newPassword }),
+        body: JSON.stringify({ password: data.newPassword })
       });
       if (!response.ok) {
         throw new Error("Failed to reset password");
       }
-      toast.success(
-        "Your password has been updated successfully! Redirecting..."
-      );
+      toast.success("Your password has been updated successfully! Redirecting...");
       setTimeout(() => navigate("/login"), 3000);
     } catch (error: any) {
       toast.error(error.message || "Something went wrong. Try again.");
@@ -132,10 +130,7 @@ export function ResetPassword() {
                   field={field}
                   error={fieldState.error}
                   icon={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                    >
+                    <button type="button" onClick={() => setShowPassword((prev) => !prev)}>
                       {showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
                     </button>
                   }

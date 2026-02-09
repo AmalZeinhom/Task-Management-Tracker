@@ -13,7 +13,8 @@ import EditProject from "./Pages/Subpages/EditProject.js";
 import ProjectMembers from "./Pages/ProjectMembers.js";
 import InviteMembers from "./Pages/Subpages/InviteMembers.js";
 import AddNewEpic from "./Pages/AddNewEpic/AddNewEpic.js";
-import GitEpics from "./Pages/GitEpics/GitEpics.js";
+import Tasks from "./Pages/Tasks/Tasks.js";
+import GetEpics from "./Pages/GetEpics/GetEpics.js";
 
 const routes = createBrowserRouter([
   {
@@ -32,35 +33,37 @@ const routes = createBrowserRouter([
         element: <AddNewProject />
       },
       {
-        path: "/projects-list",
+        path: "/projects",
         element: <ProjectsList />
       },
       {
         path: "/invite-members",
         element: <InviteMembers />
-      }
-    ]
-  },
-
-  {
-    path: "/projects/:projectId",
-    element: <Layout />,
-    children: [
-      {
-        path: "edit-project",
-        element: <EditProject />
       },
       {
-        path: "members",
-        element: <ProjectMembers />
-      },
-      {
-        path: "epics",
-        element: <GitEpics />
-      },
-      {
-        path: "epics/new",
-        element: <AddNewEpic />
+        path: "/projects/:projectId",
+        children: [
+          {
+            path: "edit-project",
+            element: <EditProject />
+          },
+          {
+            path: "members",
+            element: <ProjectMembers />
+          },
+          {
+            path: "epics",
+            element: <GetEpics />
+          },
+          {
+            path: "epics/new",
+            element: <AddNewEpic />
+          },
+          {
+            path: "tasks",
+            element: <Tasks />
+          }
+        ]
       }
     ]
   },

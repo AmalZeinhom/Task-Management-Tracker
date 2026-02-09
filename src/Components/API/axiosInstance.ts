@@ -6,7 +6,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
 const api = axios.create({
-  baseURL: supabaseUrl,
+  baseURL: supabaseUrl
 });
 
 //Interceptors for add the token with every request
@@ -32,8 +32,8 @@ api.interceptors.response.use(
             {
               headers: {
                 "Content-Type": "application/json",
-                apikey: supabasekey,
-              },
+                apikey: supabasekey
+              }
             }
           );
           const newAccessToken = res.data.access_token;

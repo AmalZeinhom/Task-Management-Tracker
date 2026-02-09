@@ -35,7 +35,7 @@ export function LogIn() {
 
   useEffect(() => {
     const token = Cookies.get("access_token");
-    if (token) navigate("/dashboard");
+    if (token) navigate("/projects");
   }, []);
 
   const onSubmit = async (data: SignUpFormData) => {
@@ -84,7 +84,7 @@ export function LogIn() {
       }
 
       toast.success(`Welcome back ${user.user_metadata?.name}!`);
-      navigate("/dashboard");
+      navigate("/projects");
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.error_description ||

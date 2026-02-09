@@ -124,7 +124,7 @@ export default function ProjectsList() {
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  onClick={() => navigate(`/projects/${project.id}/members`)}
+                  onClick={() => navigate(`/projects/${project.id}/epics`)}
                   className="cursor-pointer px-6 py-4 bg-brightness-primary shadow-lg rounded-2xl hover:shadow-xl transition"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -147,7 +147,7 @@ export default function ProjectsList() {
                     </div>
 
                     <div className="flex-1">
-                      <p className="text-gray-700 text-sm mb-2 line-clamp-2">
+                      <p className="text-gray-700 text-sm mb-2 line-clamp-2 text-center">
                         {project.description}
                       </p>
                     </div>

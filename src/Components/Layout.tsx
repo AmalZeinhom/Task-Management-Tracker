@@ -6,6 +6,8 @@ import Sidebar from "./Sidebar";
 export default function Layout() {
   const location = useLocation();
 
+  console.log("CURRENT PATH:", location.pathname);
+
   const hideLayoutPaths = ["/login", "/signup", "/forget-password", "/reset-password"];
 
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);

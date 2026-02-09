@@ -63,18 +63,18 @@ export default function Sidebar({
       hasSubmenu: true,
       submenu: [
         { name: "Add New Project", icon: <Plus size={20} />, path: "/add-new-project" },
-        { name: "Projects List", icon: <ListChecks size={20} />, path: "/projects-list" },
-        ...(projectId
-          ? [
-              {
-                name: "Members",
-                icon: <User2Icon size={20} />,
-                path: `/projects/${projectId}/members`
-              }
-            ]
-          : [])
+        { name: "Projects List", icon: <ListChecks size={20} />, path: "/projects" }
       ]
     },
+    ...(projectId
+      ? [
+          {
+            name: "Members",
+            icon: <User2Icon size={20} />,
+            path: `/projects/${projectId}/members`
+          }
+        ]
+      : []),
     ...(projectId
       ? [
           {
@@ -84,7 +84,15 @@ export default function Sidebar({
           }
         ]
       : []),
-    { name: "My Tasks", icon: <CalendarCheck2 size={20} />, path: "/my-tasks" },
+    ...(projectId
+      ? [
+          {
+            name: "Tasks",
+            icon: <CalendarCheck2 size={20} />,
+            path: "tasks"
+          }
+        ]
+      : []),
     { name: "My Account", icon: <User size={20} />, path: "/my-account" }
   ];
 

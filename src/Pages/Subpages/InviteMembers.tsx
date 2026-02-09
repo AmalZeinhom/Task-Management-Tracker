@@ -22,7 +22,7 @@ export default function InviteMembers() {
               <h1 className="text-2xl font-semibold text-blue-darkBlue">Invite Members</h1>
               <p className="text-sm text-gray-500">Send email invites to join your project.</p>
             </div>
-            <Link to="/projects-list" className="text-sm text-gray-500 hover:text-gray-700">
+            <Link to="/projects" className="text-sm text-gray-500 hover:text-gray-700">
               Back to Projects
             </Link>
           </div>

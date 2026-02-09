@@ -5,9 +5,9 @@ const userSlice = createSlice({
   initialState: {
     data: null,
     loading: false,
-    error: null,
+    error: null
   },
-  reducers: {},
+  reducers: {}
 });
 
 export default userSlice.reducer;
