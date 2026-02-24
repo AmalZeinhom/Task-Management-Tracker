@@ -12,9 +12,9 @@ import ProjectsList from "./Pages/Subpages/ProjectsList.js";
 import EditProject from "./Pages/Subpages/EditProject.js";
 import ProjectMembers from "./Pages/ProjectMembers.js";
 import InviteMembers from "./Pages/Subpages/InviteMembers.js";
-import AddNewEpic from "./Pages/AddNewEpic/AddNewEpic.js";
+import AddNewEpic from "./Pages/Epics/AddNewEpic.js";
 import Tasks from "./Pages/Tasks/Tasks.js";
-import GetEpics from "./Pages/GetEpics/GetEpics.js";
+import GetEpics from "./Pages/Epics/GetEpics.js";
 
 const routes = createBrowserRouter([
   {

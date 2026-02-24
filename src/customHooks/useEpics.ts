@@ -1,28 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
-
-export type Epic = {
-  id: string;
-  epic_id: string;
-  title: string;
-  description?: string;
-  deadline: string;
-  created_at: string;
-  created_by: {
-    sub: string;
-    name: string;
-    email: string;
-    department: string;
-  };
-  assignee: {
-    sub: string;
-    name: string;
-    email: string;
-    department: string;
-  };
-};
+import { Epic } from "@/Components/Types/Epic";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -32,52 +12,44 @@ export function useEpics(projectId?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //! Set the fetchEpics function inside the useEffect To prevent recreate it each render
-  useEffect(() => {
+  const fetchEpics = useCallback(async () => {
     if (!projectId) return;
 
-    //! Allow to cancel the request if: 1.Component Unmounted, 2.dependency change, 3.page quick changes
-    const controller = new AbortController();
+    const accessToken = Cookies.get("access_token");
 
-    const fetchEpics = async () => {
-      const accessToken = Cookies.get("access_token");
+    if (!accessToken) {
+      toast.error("Unauthorized");
+      setLoading(false);
+      return;
+    }
 
-      if (!accessToken) {
-        toast.error("Unauthorized");
-        setLoading(false);
-        return;
-      }
+    try {
+      setLoading(true);
 
-      try {
-        const response = await axios.get<Epic[]>(
-          `${supabaseUrl}/rest/v1/project_epics?project_id=eq.${projectId}`,
-          {
-            headers: {
-              apikey: supabaseKey,
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json"
-            },
-
-            //! Give the signal to the axios
-            signal: controller.signal
+      const response = await axios.get<Epic[]>(
+        `${supabaseUrl}/rest/v1/project_epics?project_id=eq.${projectId}`,
+        {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
           }
-        );
-
-        setEpics(response.data);
-      } catch (error) {
-        if (!axios.isCancel(error)) {
-          setError("Failed to Load Epics");
         }
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
-    fetchEpics();
-
-    //! Cleanup
-    return () => controller.abort();
+      setEpics(response.data);
+      return response.data;
+    } catch {
+      setError("Failed to Load Epics");
+      return [];
+    } finally {
+      setLoading(false);
+    }
   }, [projectId]);
 
-  return { epics, loading, error };
+  useEffect(() => {
+    fetchEpics();
+  }, [fetchEpics]);
+
+  return { epics, loading, error, refetch: fetchEpics };
 }
