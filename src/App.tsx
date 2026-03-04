@@ -15,10 +15,12 @@ import InviteMembers from "./Pages/Subpages/InviteMembers.js";
 import AddNewEpic from "./Pages/Epics/AddNewEpic.js";
 import Tasks from "./Pages/Tasks/Tasks.js";
 import GetEpics from "./Pages/Epics/GetEpics.js";
+import { ProtectedLoader } from "./Routes/ProtectedLoader.js";
 
 const routes = createBrowserRouter([
   {
     element: <Layout />,
+    loader: ProtectedLoader,
     children: [
       {
         path: "/dashboard",

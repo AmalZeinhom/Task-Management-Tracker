@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { EyeClosedIcon, EyeOpenIcon } from "../assets/icons/eye";
 import Cookies from "js-cookie";
 import api from "../Components/API/axiosInstance";
+import { login } from "@/Store/authSlice";
+import { useDispatch } from "react-redux";
 
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
@@ -32,11 +34,7 @@ export function LogIn() {
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = Cookies.get("access_token");
-    if (token) navigate("/projects");
-  }, []);
+  const dispatch = useDispatch();
 
   const onSubmit = async (data: SignUpFormData) => {
     const { email, password } = data;
@@ -83,8 +81,10 @@ export function LogIn() {
         });
       }
 
+      dispatch(login());
+
       toast.success(`Welcome back ${user.user_metadata?.name}!`);
-      navigate("/projects");
+      navigate("/projects", { replace: true }); //, { replace: true } this prevent the user from going back to the login page after successful login by replacing the current entry in the history stack instead of adding a new one.
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.error_description ||

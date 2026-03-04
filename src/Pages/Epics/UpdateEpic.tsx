@@ -1,4 +1,4 @@
-import { useUpdateEpic } from "@/customHooks/useUpdateEpics";
+import { useUpdateEpic } from "@/hooks/useUpdateEpics";
 import { Epic } from "@/Components/Types/Epic";
 import { useState } from "react";
 import toast from "react-hot-toast";

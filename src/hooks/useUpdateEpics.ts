@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -8,6 +9,8 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 export function useUpdateEpic() {
   const [loading, setLoading] = useState(false);
 
+  const accessToken = Cookies.get("access_token");
+
   const updateEpic = async (id: string, payload: any) => {
     try {
       setLoading(true);
@@ -16,7 +19,7 @@ export function useUpdateEpic() {
         headers: {
           apikey: supabaseKey,
           "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseKey}`
+          Authorization: `Bearer ${accessToken}`
         }
       });
 

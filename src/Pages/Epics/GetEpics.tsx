@@ -3,12 +3,13 @@ import { motion } from "framer-motion";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { IoMdMore } from "react-icons/io";
 import { CiCalendar, CiEdit } from "react-icons/ci";
-import { useEpics } from "@/customHooks/useEpics";
-import { useState } from "react";
+import { useEpics } from "@/hooks/useEpics";
+import { useState, useEffect } from "react";
 import { Epic } from "@/Components/Types/Epic";
 import { Modal } from "@/Components/Common/Modal";
 import { EpicDetails } from "@/Pages/Epics/EpicDetails";
 import { UpdateEpicModal } from "@/Components/Common/UpdateEpicModal";
+import api from "@/Components/API/axiosInstance";
 
 export default function GetEpics() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -17,6 +18,25 @@ export default function GetEpics() {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [openDropDown, setOpenDropDown] = useState<string | null>(null);
+  const [projectName, setProjectName] = useState<string>("");
+
+  useEffect(() => {
+    const fetchProjectName = async () => {
+      if (!projectId) return;
+
+      try {
+        const response = await api.get(`/rest/v1/projects?id=eq.${projectId}`);
+
+        if (response.data && response.data.length > 0) {
+          setProjectName(response.data[0].name);
+        }
+      } catch (err) {
+        console.error("Failed to fetch project name:", err);
+      }
+    };
+
+    fetchProjectName();
+  }, [projectId]);
 
   const handleUpdatedEpics = async () => {
     await refetch();
@@ -41,7 +61,7 @@ export default function GetEpics() {
               Projects /
             </Link>
             <Link to={`/projects/${projectId}`} className="text-gray-500 hover:text-gray-700">
-              {projectId} /
+              {projectName || projectId} /
             </Link>
             <span className="text-gray-700 font-medium">Epics</span>
           </div>

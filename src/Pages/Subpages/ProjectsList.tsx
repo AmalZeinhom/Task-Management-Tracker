@@ -5,13 +5,7 @@ import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { ClipboardPenLine, X, PencilLine } from "lucide-react";
 import api from "../../Components/API/axiosInstance";
-
-type Project = {
-  id: string;
-  name: string;
-  description: string;
-  created_at: string;
-};
+import { Project } from "@/Components/Types/Project";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
