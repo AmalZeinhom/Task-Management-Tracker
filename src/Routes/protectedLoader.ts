@@ -1,7 +1,7 @@
 import { redirect } from "react-router-dom";
 import { store } from "@/Store/store";
 
-export function ProtectedLoader() {
+export default function ProtectedLoader() {
   const isAuthenticated = store.getState().auth.isAuthenticated;
 
   if (!isAuthenticated) {
