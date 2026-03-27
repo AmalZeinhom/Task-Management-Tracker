@@ -2,8 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import ProjectMemberSkeleton from "../Components/Common/ProjectMemberSkeleton";
-import api from "../Components/API/axiosInstance";
+import ProjectMemberSkeleton from "@/Common/ProjectMemberSkeleton";
+import api from "../API/axiosInstance";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 

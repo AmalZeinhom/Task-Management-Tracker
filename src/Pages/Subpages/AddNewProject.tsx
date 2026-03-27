@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import axios from "axios";
-import api from "../../Components/API/axiosInstance";
+import api from "../../API/axiosInstance";
 import { Link } from "react-router-dom";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;

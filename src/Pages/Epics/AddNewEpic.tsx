@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import api from "../../Components/API/axiosInstance";
+import api from "../../API/axiosInstance";
 import axios from "axios";
+import CustomDatePicker from "@/Components/DatePicker";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -28,15 +29,14 @@ const schema = z.object({
     .optional(),
   assignee: z.string().optional(),
   deadline: z
-    .string()
+    .date()
     .optional()
     .refine(
       (val) => {
         if (!val) return true;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const selectedDate = new Date(val + "T00:00:00");
-        return selectedDate >= today;
+        return val >= today;
       },
       { message: "Deadline cannot be in the past" }
     )
@@ -57,22 +57,25 @@ export default function AddNewEpic() {
   const params = useParams();
   const projectId = params.projectId as string | undefined;
   const navigate = useNavigate();
-  const [members, setMembers] = React.useState<Member[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
 
   if (!projectId) {
     toast.error("Project ID is missing!");
     return null;
   }
-
-  const projectName = "Task Management Project";
+  const projectName = new URLSearchParams(window.location.search).get("projectName") || "Project";
 
   const {
     handleSubmit,
     register,
+    control,
     reset,
     formState: { errors, isSubmitting }
   } = useForm<FormData>({
-    resolver: zodResolver(schema)
+    resolver: zodResolver(schema),
+    defaultValues: {
+      deadline: undefined
+    }
   });
 
   const onSubmit = async (data: FormData) => {
@@ -117,7 +120,7 @@ export default function AddNewEpic() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchProjectMembers = async () => {
       try {
         const accessToken = Cookies.get("access_token");
@@ -164,10 +167,7 @@ export default function AddNewEpic() {
           >
             {projectName} /
           </Link>
-          <Link
-            to={`/projects/${projectId}/epics/new`}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <Link to={`/projects/${projectId}/epics`} className="text-gray-500 hover:text-gray-700">
             Epics /
           </Link>
 
@@ -199,14 +199,15 @@ export default function AddNewEpic() {
           )}
 
           <label htmlFor="assignee">Assign to</label>
+
           <div className="relative w-[25%]">
             <select
               {...register("assignee")}
-              name="assignee"
               id="assignee"
-              className="w-full h-11 border-2 border-gray-400 rounded-xl flex items-center focus:shadow-xl focus:border-gray-500 outline-none px-3 py-2 mt-2 mb-5 appearance-none"
+              className="w-full h-11 border-2 border-gray-400 rounded-xl px-3 pr-10 mt-2 mb-5 appearance-none focus:shadow-xl focus:border-gray-500 outline-none"
             >
-              <option value="">Select an assignee</option>
+              <option value="">Select Assignee</option>
+
               {members.map((member) => (
                 <option key={member.member_id} value={member.user_id}>
                   {member.metadata.name}
@@ -215,21 +216,24 @@ export default function AddNewEpic() {
             </select>
 
             <ChevronDown
-              size={18}
-              className="pointer-events-none right-10 top-1/2 -translate-y-1/2 absolute text-gray-600"
+              size={20}
+              className="pointer-events-none absolute right-3 top-[50%] -translate-y-[65%]  text-gray-600"
             />
           </div>
 
-          <label htmlFor="deadline">Deadline</label>
-          <div className="relative w-[25%]">
-            <input
-              type="date"
-              id="deadline"
-              {...register("deadline")}
-              min={new Date().toISOString().split("T")[0]}
-              className="w-full h-11 border-2 border-gray-400 rounded-xl px-3 pr-10 mt-2 mb-5"
-            />
-          </div>
+          {errors.assignee && (
+            <p className="text-red-600 text-sm mb-4">{errors.assignee.message}</p>
+          )}
+
+          <Controller
+            name="deadline"
+            control={control}
+            render={({ field }) => (
+              <CustomDatePicker selectedDate={field.value ?? null} onDateChange={field.onChange} />
+            )}
+          />
+
+          {errors.deadline && <p className="text-red-600 text-sm">{errors.deadline.message}</p>}
 
           <div className="flex justify-end gap-5">
             <motion.button

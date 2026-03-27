@@ -14,7 +14,7 @@ import ProjectMembers from "./Pages/ProjectMembers.js";
 import InviteMembers from "./Pages/Subpages/InviteMembers.js";
 import AddNewEpic from "./Pages/Epics/AddNewEpic.js";
 import Tasks from "./Pages/Tasks/Tasks.js";
-import GetEpics from "./Pages/Epics/GetEpics.js";
+import GetEpics from "./Pages/Epics/ListEpics.js";
 import ProtectedLoader from "./Routes/protectedLoader";
 
 const routes = createBrowserRouter([

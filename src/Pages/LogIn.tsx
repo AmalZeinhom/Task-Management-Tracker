@@ -4,11 +4,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import registerImg from "../assets/register.png";
 import toast from "react-hot-toast";
-import FormInput from "../Components/Common/FormInput";
+import FormInput from "@/Common/FormInput";
 import { NavLink, useNavigate } from "react-router-dom";
 import { EyeClosedIcon, EyeOpenIcon } from "../assets/icons/eye";
 import Cookies from "js-cookie";
-import api from "../Components/API/axiosInstance";
+import api from "../API/axiosInstance";
 import { login } from "@/Store/authSlice";
 import { useDispatch } from "react-redux";
 

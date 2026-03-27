@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import api from "../../Components/API/axiosInstance";
+import api from "../../API/axiosInstance";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";

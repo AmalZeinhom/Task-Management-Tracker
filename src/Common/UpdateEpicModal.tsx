@@ -1,6 +1,6 @@
 import { IoIosClose } from "react-icons/io";
 import { motion } from "framer-motion";
-import { Epic } from "../Types/Epic";
+import { Epic } from "../../Types/Epic";
 import UpdateEpic from "@/Pages/Epics/UpdateEpic";
 
 type UpdateEpicModalProps = {

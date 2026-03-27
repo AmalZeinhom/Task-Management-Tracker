@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
-import { Epic } from "@/Components/Types/Epic";
+import { Epic } from "@/Types/Epic";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;

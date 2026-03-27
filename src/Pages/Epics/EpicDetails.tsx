@@ -1,4 +1,4 @@
-import { Epic } from "@/Components/Types/Epic";
+import { Epic } from "@/Types/Epic";
 import { User, UserCircle, Calendar } from "lucide-react";
 
 interface EpicDetailsProps {

@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { ClipboardPenLine, X, PencilLine } from "lucide-react";
-import api from "../../Components/API/axiosInstance";
-import { Project } from "@/Components/Types/Project";
+import api from "../../API/axiosInstance";
+import { Project } from "@/Types/Project";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;

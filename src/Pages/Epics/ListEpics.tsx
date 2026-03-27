@@ -5,11 +5,11 @@ import { IoMdMore } from "react-icons/io";
 import { CiCalendar, CiEdit } from "react-icons/ci";
 import { useEpics } from "@/hooks/useEpics";
 import { useState, useEffect } from "react";
-import { Epic } from "@/Components/Types/Epic";
-import { Modal } from "@/Components/Common/Modal";
+import { Epic } from "@/Types/Epic";
+import { Modal } from "@/Common/Modal";
 import { EpicDetails } from "@/Pages/Epics/EpicDetails";
-import { UpdateEpicModal } from "@/Components/Common/UpdateEpicModal";
-import api from "@/Components/API/axiosInstance";
+import { UpdateEpicModal } from "@/Common/UpdateEpicModal";
+import api from "@/API/axiosInstance";
 
 export default function GetEpics() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -107,7 +107,7 @@ export default function GetEpics() {
                   setIsUpdateOpen(false);
                 }}
               >
-                <div className="bg-brightness-primary rounded-xl shadow-xl p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div className="bg-brightness-primary rounded-xl shadow-xl p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 hover:cursor-pointer transition">
                   <div className="flex flex-wrap items-center gap-6">
                     <HiOutlineLightBulb size={24} />
                     <div className="flex flex-col gap-2">

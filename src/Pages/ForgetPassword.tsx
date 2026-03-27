@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import forgetPassword from "../assets/forget-pass.png";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
-import FormInput from "../Components/Common/FormInput";
+import FormInput from "@/Common/FormInput";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";

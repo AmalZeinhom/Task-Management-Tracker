@@ -1,5 +1,5 @@
 import { useUpdateEpic } from "@/hooks/useUpdateEpics";
-import { Epic } from "@/Components/Types/Epic";
+import { Epic } from "@/Types/Epic";
 import { useState } from "react";
 import toast from "react-hot-toast";
 

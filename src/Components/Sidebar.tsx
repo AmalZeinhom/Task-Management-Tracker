@@ -8,9 +8,10 @@ import {
   MessageCircleMore,
   LogOut
 } from "lucide-react";
+import { MdArrowForwardIos, MdOutlineArrowBackIosNew } from "react-icons/md";
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { showLogoutToast } from "./Common/LogoutPopUp";
+import { showLogoutToast } from "@/Common/LogoutPopUp";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 
@@ -27,7 +28,6 @@ export default function Sidebar({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
-  const ignoreClickRef = useRef(false);
 
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -50,8 +50,7 @@ export default function Sidebar({
       Cookies.remove("refresh_token");
 
       navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } catch {
       toast.error("Logout failed, please try again.");
     }
   };
@@ -66,7 +65,7 @@ export default function Sidebar({
         { name: "Projects List", icon: <ListChecks size={20} />, path: "/projects" }
       ]
     },
-    ...(projectId
+    ...(projectId //This called spread operator, with condition, if there is a projectId then add the elements to the main menu.
       ? [
           {
             name: "Members",
@@ -96,37 +95,19 @@ export default function Sidebar({
     { name: "My Account", icon: <User size={20} />, path: "/my-account" }
   ];
 
-  React.useEffect(() => {
-    if (projectId) setIsProjectsOpen(true);
-  }, [projectId]);
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => !prev);
+  };
 
   useEffect(() => {
-    function handleDocumentMouseDown(e: MouseEvent) {
-      const el = sidebarRef.current;
-      if (!el) return;
-
-      if (ignoreClickRef.current) {
-        ignoreClickRef.current = false;
-        return;
-      }
-
-      if (el.contains(e.target as Node)) {
-        setIsCollapsed(false);
-      } else {
-        setIsCollapsed(true);
-        if (isMobileOpen) setIsMobileOpen?.(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleDocumentMouseDown);
-    return () => document.removeEventListener("mousedown", handleDocumentMouseDown);
-  }, [isMobileOpen, setIsMobileOpen]);
+    if (projectId) setIsProjectsOpen(true);
+  }, [projectId]);
 
   return (
     <>
       <aside
         ref={sidebarRef}
-        className={`bg-brightness-primary text-blue-darkBlue flex flex-col shadow-xl fixed lg:static top-14 lg:top-0 left-0 h-[calc(100vh-3.5rem)] lg:h-full overflow-y-auto
+        className={`bg-brightness-primary text-blue-darkBlue flex flex-col shadow-xl fixed lg:static top-14 lg:top-0 left-0 h-[calc(100vh-3.5rem)] lg:h-full
           transition-all duration-300
           ${isCollapsed ? "w-20" : "w-64"}
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 z-40`}
@@ -175,6 +156,12 @@ export default function Sidebar({
             </div>
           ))}
         </nav>
+
+        <div className="absolute bottom-16 -right-5 overflow-visible z-50">
+          <button onClick={toggleSidebar} className="p-2 rounded-full bg-blue-darkBlue text-white">
+            {isCollapsed ? <MdArrowForwardIos size={20} /> : <MdOutlineArrowBackIosNew size={20} />}
+          </button>
+        </div>
 
         <div className="absolute bottom-6 w-full px-3">
           <button
