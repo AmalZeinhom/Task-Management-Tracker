@@ -1,23 +1,18 @@
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { HiOutlineLightBulb } from "react-icons/hi";
-import { IoMdMore } from "react-icons/io";
-import { CiCalendar, CiEdit } from "react-icons/ci";
+import { CiCalendar } from "react-icons/ci";
 import { useEpics } from "@/hooks/useEpics";
 import { useState, useEffect } from "react";
-import { Epic } from "@/Types/Epic";
-import { Modal } from "@/Common/Modal";
-import { EpicDetails } from "@/Pages/Epics/EpicDetails";
-import { UpdateEpicModal } from "@/Common/UpdateEpicModal";
 import api from "@/API/axiosInstance";
+import { Epic } from "@/Types/Epic";
+import EpicsModal from "@/Components/EpicsModal";
 
 export default function GetEpics() {
   const { projectId } = useParams<{ projectId: string }>();
-  const { epics, loading, error, refetch } = useEpics(projectId);
+  const { epics, loading, error } = useEpics(projectId); //? First data source for epics from API
+  const [localEpics, setLocalEpics] = useState<Epic[]>([]); //? Second data source for epics from local state
   const [selectedEpic, setSelectedEpic] = useState<Epic | null>(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [openDropDown, setOpenDropDown] = useState<string | null>(null);
   const [projectName, setProjectName] = useState<string>("");
 
   useEffect(() => {
@@ -38,10 +33,9 @@ export default function GetEpics() {
     fetchProjectName();
   }, [projectId]);
 
-  const handleUpdatedEpics = async () => {
-    await refetch();
-  };
-
+  useEffect(() => {
+    setLocalEpics(epics); //? Sync local state with API data whenever it changes
+  }, [epics]);
   return (
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -98,15 +92,8 @@ export default function GetEpics() {
 
         {!loading && epics.length > 0 && (
           <div className="flex flex-col gap-6">
-            {epics.map((epic) => (
-              <div
-                key={epic.id}
-                onClick={() => {
-                  setSelectedEpic(epic);
-                  setIsDetailsOpen(true);
-                  setIsUpdateOpen(false);
-                }}
-              >
+            {localEpics.map((epic) => (
+              <div key={epic.id} onClick={() => setSelectedEpic(epic)}>
                 <div className="bg-brightness-primary rounded-xl shadow-xl p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 hover:cursor-pointer transition">
                   <div className="flex flex-wrap items-center gap-6">
                     <HiOutlineLightBulb size={24} />
@@ -145,63 +132,30 @@ export default function GetEpics() {
                         {epic.assignee?.name ?? "Unassigned"}
                       </p>
                     </div>
-
-                    <div className="relative flex items-center gap-6">
-                      <IoMdMore
-                        size={24}
-                        className="cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenDropDown(openDropDown === epic.id ? null : epic.id);
-                        }}
-                      />
-
-                      {openDropDown === epic.id && (
-                        <motion.ul
-                          initial={{ scale: 0.5 }}
-                          animate={{ scale: 1 }}
-                          transition={{ duration: 0.3 }}
-                          className="absolute right-0 top-6 w-36 rounded shadow-lg z-20"
-                        >
-                          <li
-                            className="px-4 py-2 rounded-lg bg-blue-darkBlue text-white cursor-pointer flex items-center gap-2"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedEpic(epic);
-                              setIsUpdateOpen(true);
-                              setIsDetailsOpen(false);
-                              setOpenDropDown(null);
-                            }}
-                          >
-                            <CiEdit size={20} />
-                            Edit
-                          </li>
-                        </motion.ul>
-                      )}
-                    </div>
                   </div>
                 </div>
               </div>
             ))}
-
-            <Modal
-              isOpen={isDetailsOpen}
-              onClose={() => {
-                setSelectedEpic(null);
-                setIsDetailsOpen(false);
-              }}
-            >
-              {selectedEpic && <EpicDetails epic={selectedEpic} />}
-            </Modal>
-
-            <UpdateEpicModal
-              epic={selectedEpic}
-              isOpen={isUpdateOpen}
-              onClose={() => setIsUpdateOpen(false)}
-              onSuccess={handleUpdatedEpics}
-            />
           </div>
         )}
+
+        <EpicsModal
+          epic={selectedEpic}
+          onClose={() => setSelectedEpic(null)}
+          onUpdate={(updatedFields: any) => {
+            setSelectedEpic((prev) => ({
+              ...prev!,
+              ...updatedFields
+            }));
+
+            //! Update local state to reflect changes immediately without refetching from API
+            //! Prev reflect to the old data from localEpics.
+            setLocalEpics((prev) =>
+              //!e.id === selectedEpic?.id => merge the updates from the old model with the new one.
+              prev.map((e) => (e.id === selectedEpic?.id ? { ...e, ...updatedFields } : e))
+            );
+          }}
+        />
       </motion.div>
     </div>
   );

@@ -5,6 +5,7 @@ export type Epic = {
   description?: string;
   deadline: string;
   created_at: string;
+  project_id: string;
   created_by: {
     sub: string;
     name: string;
