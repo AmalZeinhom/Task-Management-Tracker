@@ -117,7 +117,7 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
                   }
                 });
               }}
-              className="border rounded px-2 py-1 text-sm"
+              className="border-2 border-gray-400 rounded-xl px-8 py-3 text-sm"
             >
               <option value="">Unassigned</option>
               {members.map((member) => (

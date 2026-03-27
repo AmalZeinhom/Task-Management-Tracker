@@ -15,7 +15,7 @@ export default function CustomDatePicker({ selectedDate, onDateChange }: DatePic
         onChange={onDateChange}
         minDate={new Date()}
         placeholderText="Select deadline"
-        className="w-full h-11 border-2 border-gray-400 rounded-xl px-3 pr-10"
+        className="w-full h-11 border-2 border-gray-400 rounded-xl px-3 pr-10 hover:cursor-pointer"
       />
 
       <Calendar1Icon

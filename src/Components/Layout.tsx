@@ -1,18 +1,21 @@
 import React, { useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { isAuthenticated } from "@/Utils/auth";
 
 export default function Layout() {
   const location = useLocation();
-
-  console.log("CURRENT PATH:", location.pathname);
 
   const hideLayoutPaths = ["/login", "/signup", "/forget-password", "/reset-password"];
 
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  if (!isAuthenticated() && !shouldHideLayout) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <>
