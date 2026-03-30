@@ -15,7 +15,7 @@ import InviteMembers from "./Pages/Subpages/InviteMembers.js";
 import AddNewEpic from "./Pages/Epics/AddNewEpic.js";
 import Tasks from "./Pages/Tasks/CreateNewTask.js";
 import ListEpics from "./Pages/Epics/ListEpics.js";
-import ProtectedLoader from "./Routes/ProtectedLoader.js";
+import ProtectedLoader from "./Routes/ProtectedLoader";
 import ListTasks from "./Pages/Tasks/ListTasks.js";
 
 const routes = createBrowserRouter([
