@@ -88,7 +88,7 @@ export default function Sidebar({
           {
             name: "Tasks",
             icon: <CalendarCheck2 size={20} />,
-            path: "tasks"
+            path: `projects/${projectId}/tasks`
           }
         ]
       : []),

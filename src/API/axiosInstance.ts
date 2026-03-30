@@ -71,8 +71,6 @@ api.interceptors.response.use(
 
         // Store the new token into cookies
         Cookies.set("access_token", newAccessToken, {
-          secure: true,
-          sameSite: "strict",
           expires: 7
         });
 

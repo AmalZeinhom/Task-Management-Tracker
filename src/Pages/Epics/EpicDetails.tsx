@@ -3,7 +3,9 @@ import EditableText from "@/Components/EditableText";
 import CustomDatePicker from "@/Components/DatePicker";
 import { Epic } from "@/Types/Epic";
 import { User, UserCircle, Calendar } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Selector from "@/Components/Selector";
 
 interface Member {
   member_id: string;
@@ -21,6 +23,10 @@ interface EpicDetailsProps {
 
 export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
   const [members, setMembers] = useState<Member[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(true);
+
+  const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
 
   const formattedDate = new Date(epic.created_at).toLocaleDateString("en-US", {
     month: "short",
@@ -28,13 +34,31 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
     year: "numeric"
   });
 
+  // Memoize options to prevent unnecessary re-renders of the Selector component
+  const options = useMemo(
+    () => [
+      { label: "Unassigned", value: "null" },
+      ...members.map((m) => ({
+        label: m.metadata.name,
+        value: m.user_id
+      }))
+    ],
+    [members]
+  );
+
+  const selectedAssignee = options.find((o) => o.value === epic.assignee?.sub) || null;
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
+        setLoadingMembers(true);
+
         const res = await api.get(`/rest/v1/get_project_members?project_id=eq.${epic.project_id}`);
         setMembers(res.data);
       } catch (err) {
-        console.log(err);
+        console.error("Failed to fetch members", err);
+      } finally {
+        setLoadingMembers(false);
       }
     };
 
@@ -42,11 +66,13 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
   }, [epic.project_id]);
 
   const updateEpic = async (id: string, data: any) => {
-    await api.patch(`/rest/v1/epics?id=eq.${id}`, data, {
-      headers: {
-        Prefer: "return=representation"
-      }
-    });
+    try {
+      await api.patch(`/rest/v1/epics?id=eq.${id}`, data, {
+        headers: { Prefer: "return=representation" }
+      });
+    } catch (err) {
+      console.error("Failed to update epic", err);
+    }
   };
 
   const UserRow = ({ label, user }: { label: string; user: { name: string } }) => (
@@ -81,16 +107,14 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
           Project / <span className="cursor-pointer hover:text-gray-500">{epic.epic_id}</span>
         </p>
 
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-          <EditableText
-            value={epic.title}
-            onSave={(newTitle: string) => {
-              updateEpic(epic.id, { title: newTitle });
-              onUpdate({ title: newTitle });
-            }}
-            className="text-2xl font-semibold"
-          />
-        </h2>
+        <EditableText
+          value={epic.title}
+          onSave={(newTitle: string) => {
+            updateEpic(epic.id, { title: newTitle });
+            onUpdate({ title: newTitle });
+          }}
+          className="text-2xl font-semibold text-gray-900 mb-6"
+        />
 
         <div className="flex flex-col gap-4 mb-6">
           <UserRow label="Created By" user={epic.created_by} />
@@ -100,32 +124,29 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
 
             <span className="text-gray-500 w-24 sm:w-28">Assignee:</span>
 
-            <select
-              value={epic.assignee?.sub || ""}
-              onChange={(e) => {
-                const newUserId = e.target.value;
+            <div className="w-48 sm:w-56">
+              <Selector
+                options={options}
+                value={selectedAssignee || null}
+                onChange={(option) => {
+                  const newUserId = option ? option.value : null;
 
-                updateEpic(epic.id, { assignee_id: newUserId });
+                  updateEpic(epic.id, { assignee_id: newUserId });
 
-                onUpdate({
-                  assignee: {
-                    sub: newUserId,
-                    name:
-                      members.find((m) => m.user_id === newUserId)?.metadata.name || "Unassigned",
-                    email: "",
-                    department: ""
-                  }
-                });
-              }}
-              className="border-2 border-gray-400 rounded-xl px-8 py-3 text-sm"
-            >
-              <option value="">Unassigned</option>
-              {members.map((member) => (
-                <option key={member.member_id} value={member.user_id}>
-                  {member.metadata.name}
-                </option>
-              ))}
-            </select>
+                  onUpdate({
+                    assignee: newUserId
+                      ? {
+                          sub: newUserId,
+                          name: option?.label || "",
+                          email: "",
+                          department: ""
+                        }
+                      : undefined
+                  });
+                }}
+                placeholder={loadingMembers ? "Loading..." : "Select Assignee"}
+              />
+            </div>
           </div>
 
           <div className="flex items-center gap-4 text-sm">
@@ -140,16 +161,18 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
             <Calendar size={18} className="text-gray-400" />
             <span className="text-gray-500 w-24 sm:w-28">Deadline:</span>
 
-            <CustomDatePicker
-              selectedDate={epic.deadline ? new Date(epic.deadline) : null}
-              onDateChange={(date) => {
-                updateEpic(epic.id, { deadline: date ? date.toISOString() : null });
+            <div className="w-48 sm:w-56">
+              <CustomDatePicker
+                selectedDate={epic.deadline ? new Date(epic.deadline) : null}
+                onDateChange={(date) => {
+                  updateEpic(epic.id, { deadline: date ? date.toISOString() : null });
 
-                onUpdate({
-                  deadline: date ? date.toISOString() : undefined
-                });
-              }}
-            />
+                  onUpdate({
+                    deadline: date ? date.toISOString() : undefined
+                  });
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -179,7 +202,14 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
               No Tasks have been added to this epic yet
             </p>
 
-            <button className="bg-blue-600 hover:bg-blue-700 rounded-lg text-brightness-secondary cursor-pointer px-5 py-2 transition">
+            <button
+              onClick={() =>
+                navigate(`/projects/${projectId}/tasks/new`, {
+                  state: { epicId: epic.epic_id }
+                })
+              }
+              className="bg-blue-600 hover:bg-blue-700 rounded-lg text-brightness-secondary cursor-pointer px-5 py-2 transition"
+            >
               Create New Task
             </button>
           </div>

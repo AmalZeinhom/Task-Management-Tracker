@@ -7,15 +7,16 @@ import { Dashboard } from "./Pages/Dashboard.js";
 import { ForgetPassword } from "./Pages/ForgetPassword.js";
 import { ResetPassword } from "./Pages/ResetPassword.js";
 import Layout from "./Components/Layout.js";
-import AddNewProject from "./Pages/Subpages/AddNewProject.js";
-import ProjectsList from "./Pages/Subpages/ProjectsList.js";
-import EditProject from "./Pages/Subpages/EditProject.js";
+import AddNewProject from "./Pages/Projects/AddNewProject.js";
+import ProjectsList from "./Pages/Projects/ProjectsList.js";
+import EditProject from "./Pages/Projects/EditProject.js";
 import ProjectMembers from "./Pages/ProjectMembers.js";
 import InviteMembers from "./Pages/Subpages/InviteMembers.js";
 import AddNewEpic from "./Pages/Epics/AddNewEpic.js";
-import Tasks from "./Pages/Tasks/Tasks.js";
-import GetEpics from "./Pages/Epics/ListEpics.js";
+import Tasks from "./Pages/Tasks/CreateNewTask.js";
+import ListEpics from "./Pages/Epics/ListEpics.js";
 import ProtectedLoader from "./Routes/ProtectedLoader.js";
+import ListTasks from "./Pages/Tasks/ListTasks.js";
 
 const routes = createBrowserRouter([
   {
@@ -55,15 +56,19 @@ const routes = createBrowserRouter([
           },
           {
             path: "epics",
-            element: <GetEpics />
+            element: <ListEpics />
           },
           {
             path: "epics/new",
             element: <AddNewEpic />
           },
           {
-            path: "tasks",
+            path: "tasks/new",
             element: <Tasks />
+          },
+          {
+            path: "tasks",
+            element: <ListTasks />
           }
         ]
       }

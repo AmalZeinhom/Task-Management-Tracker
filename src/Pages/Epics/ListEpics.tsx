@@ -36,6 +36,7 @@ export default function GetEpics() {
   useEffect(() => {
     setLocalEpics(epics); //? Sync local state with API data whenever it changes
   }, [epics]);
+
   return (
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
       <motion.div
