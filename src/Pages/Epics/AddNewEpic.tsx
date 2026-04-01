@@ -225,13 +225,18 @@ export default function AddNewEpic() {
             <p className="text-red-600 text-sm mb-4">{errors.assignee.message}</p>
           )}
 
-          <Controller
-            name="deadline"
-            control={control}
-            render={({ field }) => (
-              <CustomDatePicker selectedDate={field.value ?? null} onDateChange={field.onChange} />
-            )}
-          />
+          <div className="w-[25%]">
+            <Controller
+              name="deadline"
+              control={control}
+              render={({ field }) => (
+                <CustomDatePicker
+                  selectedDate={field.value ?? null}
+                  onDateChange={field.onChange}
+                />
+              )}
+            />
+          </div>
 
           {errors.deadline && <p className="text-red-600 text-sm">{errors.deadline.message}</p>}
 

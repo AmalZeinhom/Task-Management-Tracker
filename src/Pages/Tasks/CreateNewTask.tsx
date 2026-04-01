@@ -4,13 +4,14 @@ import Selector from "@/Components/Selector";
 import { statusOptions } from "@/Constants/taskStatus";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
@@ -53,6 +54,11 @@ export default function Tasks() {
   const [assigneeOptions, setAssigneeOptions] = useState<any[]>([]);
   const [epicOptions, setEpicOptions] = useState<any[]>([]);
 
+  const [searchParams] = useSearchParams();
+  const statusFormUrl = searchParams.get("status") as FormData["status"] | null;
+
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -68,7 +74,7 @@ export default function Tasks() {
       epic_id: null,
       assignee_id: null,
       due_date: null,
-      status: "TO_DO"
+      status: statusFormUrl || "TO_DO"
     }
   });
 
@@ -121,7 +127,7 @@ export default function Tasks() {
 
         const mapped = res.data.map((epic: any) => ({
           label: `${epic.epic_id} ${titleTruncate(epic.title)}`,
-          value: epic.epic_id
+          value: epic.id
         }));
 
         setEpicOptions(mapped);
@@ -132,6 +138,12 @@ export default function Tasks() {
 
     fetchEpics();
   }, [projectId]);
+
+  useEffect(() => {
+    if (statusFormUrl) {
+      setValue("status", statusFormUrl);
+    }
+  }, [statusFormUrl, setValue]);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -161,10 +173,13 @@ export default function Tasks() {
         return;
       }
       toast.success("Task Created Successfully.");
-
+      queryClient.invalidateQueries({
+        queryKey: ["tasks", projectId]
+      });
       navigate(`/projects/${projectId}/tasks`);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.log("FULL ERROR:", err.response?.data);
+      console.log("STATUS:", err.response?.status);
     }
   };
 
@@ -283,7 +298,7 @@ export default function Tasks() {
 
               <button
                 type="button"
-                onClick={() => navigate("/projects/tasks")}
+                onClick={() => navigate(`/projects/${projectId}/tasks`)}
                 className="px-6 py-3 rounded-xl bg-gray-200"
               >
                 Cancel

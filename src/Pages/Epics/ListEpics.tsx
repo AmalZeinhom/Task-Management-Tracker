@@ -4,34 +4,16 @@ import { HiOutlineLightBulb } from "react-icons/hi";
 import { CiCalendar } from "react-icons/ci";
 import { useEpics } from "@/hooks/useEpics";
 import { useState, useEffect } from "react";
-import api from "@/API/axiosInstance";
 import { Epic } from "@/Types/Epic";
 import EpicsModal from "@/Components/EpicsModal";
+import useProjectName from "@/hooks/useProjectName";
 
 export default function GetEpics() {
   const { projectId } = useParams<{ projectId: string }>();
   const { epics, loading, error } = useEpics(projectId); //? First data source for epics from API
   const [localEpics, setLocalEpics] = useState<Epic[]>([]); //? Second data source for epics from local state
   const [selectedEpic, setSelectedEpic] = useState<Epic | null>(null);
-  const [projectName, setProjectName] = useState<string>("");
-
-  useEffect(() => {
-    const fetchProjectName = async () => {
-      if (!projectId) return;
-
-      try {
-        const response = await api.get(`/rest/v1/projects?id=eq.${projectId}`);
-
-        if (response.data && response.data.length > 0) {
-          setProjectName(response.data[0].name);
-        }
-      } catch (err) {
-        console.error("Failed to fetch project name:", err);
-      }
-    };
-
-    fetchProjectName();
-  }, [projectId]);
+  const projectName = useProjectName(projectId);
 
   useEffect(() => {
     setLocalEpics(epics); //? Sync local state with API data whenever it changes

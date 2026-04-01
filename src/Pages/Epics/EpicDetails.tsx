@@ -205,7 +205,7 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
             <button
               onClick={() =>
                 navigate(`/projects/${projectId}/tasks/new`, {
-                  state: { epicId: epic.epic_id }
+                  state: { epicId: epic.id }
                 })
               }
               className="bg-blue-600 hover:bg-blue-700 rounded-lg text-brightness-secondary cursor-pointer px-5 py-2 transition"

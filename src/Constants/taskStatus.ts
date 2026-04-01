@@ -17,3 +17,7 @@ export const statusOptions = () =>
       .replace(/\b\w/g, (char) => char.toUpperCase()),
     value: status
   }));
+
+// This is for type safety, ensuring that any variable of type TaskStatusType can only be one of the values in the TaskStatus array.
+// TypeScript willTaskStatusType prevent assigning any incorrect value.
+export type TaskStatusType = (typeof TaskStatus)[number];
