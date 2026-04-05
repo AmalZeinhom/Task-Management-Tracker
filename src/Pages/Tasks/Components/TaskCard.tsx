@@ -1,6 +1,13 @@
 import { MoreHorizontal, Clock } from "lucide-react";
+import { useDraggable } from "@dnd-kit/core";
 
-export default function TaskCard({ task }: any) {
+export default function TaskCard({ task, isOverlay = false }: any) {
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: task.id,
+    data: task,
+    disabled: isOverlay // Disable dragging when it's the overlay
+  });
+
   const formattedDate = new Date(task.due_date).toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
@@ -8,7 +15,14 @@ export default function TaskCard({ task }: any) {
   });
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition">
+    <div
+      ref={setNodeRef}
+      {...(!isOverlay ? listeners : {})}
+      {...(!isOverlay ? attributes : {})}
+      className={`bg-white border border-gray-200 rounded-lg p-4 shadow-sm transition ${
+        !isOverlay ? "hover:shadow-md cursor-grab" : "shadow-lg opacity-90"
+      }`}
+    >
       <div className="flex justify-between items-start">
         <h4 className="text-sm font-semibold text-gray-800">{task.title}</h4>
         <MoreHorizontal size={16} className="text-gray-400 cursor-pointer" />
