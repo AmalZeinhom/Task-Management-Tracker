@@ -1,12 +1,21 @@
-import { createSlice } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getCurrentUser } from "./thunk";
 
-interface AuthState {
+type User = {
+  name: string;
+  job_title: string;
+};
+
+type AuthState = {
+  user: User | null;
   isAuthenticated: boolean;
-}
+  loading: boolean;
+};
 
 const initialState: AuthState = {
-  isAuthenticated: !!Cookies.get("access_token")
+  user: null,
+  isAuthenticated: false,
+  loading: false
 };
 
 const authSlice = createSlice({
@@ -14,13 +23,28 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
+      state.user = null;
       state.isAuthenticated = false;
-    },
-    login: (state) => {
-      state.isAuthenticated = true;
+      state.loading = false;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getCurrentUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getCurrentUser.fulfilled, (state, action: PayloadAction<User>) => {
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        state.loading = false;
+      })
+      .addCase(getCurrentUser.rejected, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+      });
   }
 });
 
-export const { logout, login } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

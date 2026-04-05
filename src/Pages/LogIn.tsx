@@ -9,8 +9,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { EyeClosedIcon, EyeOpenIcon } from "../assets/icons/eye";
 import Cookies from "js-cookie";
 import api from "../API/axiosInstance";
-import { login } from "@/Store/authSlice";
 import { useDispatch } from "react-redux";
+import { getCurrentUser } from "@/Store/thunk";
+import type { AppDispatch } from "@/Store/store";
 
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
 
@@ -34,7 +35,7 @@ export function LogIn() {
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const onSubmit = async (data: SignUpFormData) => {
     const { email, password } = data;
@@ -81,10 +82,14 @@ export function LogIn() {
         });
       }
 
-      dispatch(login());
+      const resultAction = await dispatch(getCurrentUser());
 
-      toast.success(`Welcome back ${user.user_metadata?.name}!`);
-      navigate("/projects", { replace: true }); //, { replace: true } this prevent the user from going back to the login page after successful login by replacing the current entry in the history stack instead of adding a new one.
+      console.log("Thunk result:", resultAction);
+
+      if (getCurrentUser.fulfilled.match(resultAction)) {
+        toast.success(`Welcome back ${user.user_metadata?.name}!`);
+        navigate("/projects", { replace: true }); //, { replace: true } this prevent the user from going back to the login page after successful login by replacing the current entry in the history stack instead of adding a new one.
+      }
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.error_description ||

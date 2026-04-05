@@ -1,6 +1,8 @@
+import { store } from "@/Store/store";
 import axios from "axios";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { logout } from "@/Store/authSlice";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
@@ -13,6 +15,8 @@ const api = axios.create({
 const forceLogout = () => {
   Cookies.remove("access_token");
   Cookies.remove("refresh_token");
+
+  store.dispatch(logout());
 
   window.location.replace("/login");
 };

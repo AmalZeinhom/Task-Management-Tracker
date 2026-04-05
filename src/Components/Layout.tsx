@@ -1,19 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { isAuthenticated } from "@/Utils/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/Store/store";
+import { getCurrentUser } from "@/Store/thunk";
 
 export default function Layout() {
   const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
 
   const hideLayoutPaths = ["/login", "/signup", "/forget-password", "/reset-password"];
-
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  if (!isAuthenticated() && !shouldHideLayout) {
+  useEffect(() => {
+    dispatch(getCurrentUser());
+  }, [dispatch]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated && !shouldHideLayout) {
     return <Navigate to="/login" replace />;
   }
 
