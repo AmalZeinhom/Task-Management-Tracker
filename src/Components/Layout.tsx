@@ -25,7 +25,7 @@ export default function Layout() {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated && !shouldHideLayout) {
+  if (!loading && !isAuthenticated && !shouldHideLayout) {
     return <Navigate to="/login" replace />;
   }
 

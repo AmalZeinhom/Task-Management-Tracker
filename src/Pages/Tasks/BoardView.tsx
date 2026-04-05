@@ -10,13 +10,14 @@ export default function BoardView() {
   const projectName = useProjectName(projectId);
 
   return (
-    <div className="min-h-screen py-6 px-6">
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen py-6 px-6"
+    >
       {/* Breadcrumb */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex gap-2 text-sm mb-6"
-      >
+      <div className="flex gap-2 text-sm mb-6">
         <Link to="/projects" className="text-gray-500">
           Projects /
         </Link>
@@ -24,7 +25,7 @@ export default function BoardView() {
           {projectName || projectId} /
         </Link>
         <span className="text-gray-700 font-medium">Tasks</span>
-      </motion.div>
+      </div>
 
       {/* Container */}
       <div className="bg-white rounded-2xl shadow p-6">
@@ -55,6 +56,6 @@ export default function BoardView() {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

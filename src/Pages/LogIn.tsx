@@ -84,8 +84,6 @@ export function LogIn() {
 
       const resultAction = await dispatch(getCurrentUser());
 
-      console.log("Thunk result:", resultAction);
-
       if (getCurrentUser.fulfilled.match(resultAction)) {
         toast.success(`Welcome back ${user.user_metadata?.name}!`);
         navigate("/projects", { replace: true }); //, { replace: true } this prevent the user from going back to the login page after successful login by replacing the current entry in the history stack instead of adding a new one.
