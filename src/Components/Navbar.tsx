@@ -27,7 +27,7 @@ export default function Navbar({ setIsMobileOpen }: { setIsMobileOpen?: (v: bool
 
         <img src={logo} className="w-8 sm:w-10 h-auto" alt="Task Tracker" />
         <h1 className="hidden sm:block text-lg sm:text-xl md:text-2xl font-bold text-blue-darkBlue whitespace-nowrap">
-          Tracker
+          TaskPilot
         </h1>
       </div>
 
