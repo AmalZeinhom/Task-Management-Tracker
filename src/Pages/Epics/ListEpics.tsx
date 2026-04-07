@@ -7,17 +7,63 @@ import { useState, useEffect } from "react";
 import { Epic } from "@/Types/Epic";
 import EpicsModal from "@/Components/EpicsModal";
 import useProjectName from "@/hooks/useProjectName";
+import Pagination from "@/Components/Pagination";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/API/axiosInstance";
 
-export default function GetEpics() {
+export default function ListEpics() {
   const { projectId } = useParams<{ projectId: string }>();
-  const { epics, loading, error } = useEpics(projectId); //? First data source for epics from API
-  const [localEpics, setLocalEpics] = useState<Epic[]>([]); //? Second data source for epics from local state
-  const [selectedEpic, setSelectedEpic] = useState<Epic | null>(null);
   const projectName = useProjectName(projectId);
+  const queryClient = useQueryClient();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 6;
+
+  const { epics, isLoading, isError, totalCount } = useEpics(projectId, currentPage, limit); //? First data source for epics from API
+  const [selectedEpic, setSelectedEpic] = useState<Epic | null>(null); // Control the open/close state of the modal and store the selected epic's data for details view.
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  // Reset to first page when projectId changes to prevent showing empty state if the new project has fewer pages than the previous one
   useEffect(() => {
-    setLocalEpics(epics); //? Sync local state with API data whenever it changes
-  }, [epics]);
+    setCurrentPage(1);
+  }, [projectId]);
+
+  const updateEpicMutation = useMutation({
+    mutationFn: async (updatedData: any) => {
+      return api.patch(`/rest/v1/project_epics?id=eq.${selectedEpic?.id}`, updatedData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["epics"] });
+      setSelectedEpic(null); // يقفل الـ modal بعد التعديل
+    }
+  });
+
+  if (isError) {
+    return <p className="text-red-500">Failed to load Epics</p>;
+  }
+
+  if (isLoading) {
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[1, 2, 3].map((x) => (
+        <div key={x} className="h-32 w-full bg-gray-200 animate-pulse rounded-lg" />
+      ))}
+    </div>;
+  }
+
+  if (!isLoading && epics.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-2">
+        <p className="text-gray-600 text-lg mb-3">No epics found for this project.</p>
+        <Link
+          to={`/projects/${projectId}/epics/new`}
+          className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-600 transition"
+        >
+          Create New Epic
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
@@ -51,31 +97,9 @@ export default function GetEpics() {
           </Link>
         </motion.div>
 
-        {error && <div className="text-center text-red-500 mt-6">{error}</div>}
-
-        {loading && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((x) => (
-              <div key={x} className="h-32 w-full bg-gray-200 animate-pulse rounded-lg" />
-            ))}
-          </div>
-        )}
-
-        {!loading && epics.length === 0 && (
-          <div className="text-center mt-10">
-            <p className="text-gray-600 text-lg mb-3">You don’t have any Epics yet.</p>
-            <Link
-              to={`/projects/${projectId}/epics/new`}
-              className="px-4 py-2 bg-blue-darkBlue text-white rounded-lg hover:bg-cyan-800 transition"
-            >
-              Create New Epic
-            </Link>
-          </div>
-        )}
-
-        {!loading && epics.length > 0 && (
+        {!isLoading && epics.length > 0 && (
           <div className="flex flex-col gap-6">
-            {localEpics.map((epic) => (
+            {epics.map((epic) => (
               <div key={epic.id} onClick={() => setSelectedEpic(epic)}>
                 <div className="bg-brightness-primary rounded-xl shadow-xl p-4 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 hover:cursor-pointer transition">
                   <div className="flex flex-wrap items-center gap-6">
@@ -122,21 +146,18 @@ export default function GetEpics() {
           </div>
         )}
 
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
         <EpicsModal
           epic={selectedEpic}
           onClose={() => setSelectedEpic(null)}
           onUpdate={(updatedFields: any) => {
-            setSelectedEpic((prev) => ({
-              ...prev!,
-              ...updatedFields
-            }));
-
-            //! Update local state to reflect changes immediately without refetching from API
-            //! Prev reflect to the old data from localEpics.
-            setLocalEpics((prev) =>
-              //!e.id === selectedEpic?.id => merge the updates from the old model with the new one.
-              prev.map((e) => (e.id === selectedEpic?.id ? { ...e, ...updatedFields } : e))
-            );
+            updateEpicMutation.mutate(updatedFields);
           }}
         />
       </motion.div>

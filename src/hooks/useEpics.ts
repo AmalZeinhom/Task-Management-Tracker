@@ -1,55 +1,75 @@
-import axios from "axios";
 import Cookies from "js-cookie";
-import { useEffect, useState, useCallback } from "react";
-import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { Epic } from "@/Types/Epic";
+import api from "@/API/axiosInstance";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
-export function useEpics(projectId?: string) {
-  const [epics, setEpics] = useState<Epic[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type EpicsResponse = {
+  epics: Epic[];
+  totalCount: number;
+};
 
-  const fetchEpics = useCallback(async () => {
-    if (!projectId) return;
+export function useEpics(projectId?: string, currentPage: number = 1, limit: number = 9) {
+  const navigate = useNavigate();
+
+  const fetchEpics = async (): Promise<EpicsResponse> => {
+    if (!projectId) {
+      return { epics: [], totalCount: 0 };
+    }
 
     const accessToken = Cookies.get("access_token");
 
     if (!accessToken) {
-      toast.error("Unauthorized");
-      setLoading(false);
-      return;
+      navigate("/login");
+      return { epics: [], totalCount: 0 };
     }
 
     try {
-      setLoading(true);
-
-      const response = await axios.get<Epic[]>(
-        `${supabaseUrl}/rest/v1/project_epics?project_id=eq.${projectId}`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-          }
+      const response = await api.get<Epic[]>(`${supabaseUrl}/rest/v1/project_epics`, {
+        params: {
+          project_id: `eq.${projectId}`,
+          limit,
+          offset: (currentPage - 1) * limit
+        },
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          Prefer: "count=exact"
         }
-      );
+      });
 
-      setEpics(response.data);
-      return response.data;
-    } catch {
-      setError("Failed to Load Epics");
-      return [];
-    } finally {
-      setLoading(false);
+      const contentRange = response.headers["content-range"] || response.headers["Content-Range"];
+
+      const totalCount = contentRange ? Number(contentRange.split("/")[1]) : 0;
+
+      return {
+        epics: response.data,
+        totalCount
+      };
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
+
+      throw error; // Rethrow the error to be handled by useQuery's isError
     }
-  }, [projectId]);
+  };
 
-  useEffect(() => {
-    fetchEpics();
-  }, [fetchEpics]);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["epics", projectId, currentPage], // Cash identity, Page 1 != Page 2
+    queryFn: fetchEpics,
+    enabled: !!projectId, // Only implement the function if the projectId is available
+    placeholderData: (prev) => prev // Keep previous data while loading new data to prevent UI breaking
+  });
 
-  return { epics, loading, error, refetch: fetchEpics };
+  return {
+    epics: data?.epics || [],
+    totalCount: data?.totalCount || 0,
+    isLoading,
+    isError
+  };
 }

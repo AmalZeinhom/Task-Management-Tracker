@@ -1,17 +1,38 @@
 import { EpicDetails } from "@/Pages/Epics/EpicDetails";
-import { createPortal } from "react-dom";
+import { Epic } from "@/Types/Epic";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { createPortal } from "react-dom"; //separate modal from DOM hierarch (the main app) to prevent z-index and overflow issues
 
-export default function EpicsModal({ epic, onClose, onUpdate }: any) {
+type EpicsModalProps = {
+  epic: Epic | null;
+  onClose: () => void;
+  onUpdate: (data: Partial<Epic>) => void;
+};
+
+export default function EpicsModal({ epic, onClose, onUpdate }: EpicsModalProps) {
   if (!epic) return null;
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, []);
 
   return createPortal(
     <div onClick={onClose} className="fixed inset-0 flex items-center justify-center bg-black/50">
-      <div
-        onClick={(e) => e.stopPropagation()}
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        onClick={(e) => e.stopPropagation()} // prevent closing modal when click inside modal content.
         className="bg-white relative w-full max-w-3xl mx-4 rounded-xl p-6 shadow-xl"
       >
         <EpicDetails epic={epic} onUpdate={onUpdate} />
-      </div>
+      </motion.div>
     </div>,
 
     document.getElementById("modal-root")!
