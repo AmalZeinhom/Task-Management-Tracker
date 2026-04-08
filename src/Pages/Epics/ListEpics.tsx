@@ -5,9 +5,9 @@ import { CiCalendar } from "react-icons/ci";
 import { useEpics } from "@/hooks/useEpics";
 import { useState, useEffect } from "react";
 import { Epic } from "@/Types/Epic";
-import EpicsModal from "@/Components/EpicsModal";
+import EpicsModal from "@/Pages/Epics/EpicsModal";
 import useProjectName from "@/hooks/useProjectName";
-import Pagination from "@/Components/Pagination";
+import Pagination from "@/Utils/Pagination";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/API/axiosInstance";
 
@@ -153,6 +153,7 @@ export default function ListEpics() {
             onPageChange={(page) => setCurrentPage(page)}
           />
         )}
+
         <EpicsModal
           epic={selectedEpic}
           onClose={() => setSelectedEpic(null)}

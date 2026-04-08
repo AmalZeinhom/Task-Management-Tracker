@@ -1,9 +1,15 @@
 export type Task = {
   id: string;
+  task_id: number;
   title: string;
   description: string;
-  dueDate: string;
-  assignee: string;
+  due_date: string;
   status: string;
   proiject_id: string;
+  assignee: {
+    id: string;
+    name: string;
+    email: string;
+    department: string;
+  };
 };

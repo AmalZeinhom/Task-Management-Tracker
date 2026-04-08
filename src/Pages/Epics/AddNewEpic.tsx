@@ -9,7 +9,7 @@ import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import api from "../../API/axiosInstance";
 import axios from "axios";
-import CustomDatePicker from "@/Components/DatePicker";
+import CustomDatePicker from "@/Utils/DatePicker";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;

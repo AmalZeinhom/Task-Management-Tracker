@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import useProjectName from "@/hooks/useProjectName";
 import { SearchIcon } from "lucide-react";
 import { TaskStatus } from "@/Constants/taskStatus";
@@ -13,6 +13,8 @@ import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import TaskCard from "./Components/TaskCard";
+import Selector from "@/Utils/Selector";
+import ListView from "./ListView";
 
 export default function BoardView() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -20,6 +22,16 @@ export default function BoardView() {
   const queryClient = useQueryClient();
 
   const [activeTask, setActiveTask] = useState<any>(null);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view = searchParams.get("view") || "board";
+
+  const options = [
+    { label: "Board View", value: "board" },
+    { label: "List View", value: "list" }
+  ];
+
+  const selectedOption = options.find((o) => o.value === view) || null;
 
   function handleDragStart(event: any) {
     setActiveTask(event.active.data.current);
@@ -83,7 +95,7 @@ export default function BoardView() {
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
-          <div className="flex gap-4 mb-6">
+          <div className="flex items-center gap-5 mb-6">
             <div className="relative w-80">
               <SearchIcon
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -96,17 +108,26 @@ export default function BoardView() {
               />
             </div>
 
-            <select className="px-4 py-2 rounded-lg bg-gray-100 text-sm">
-              <option>Board View</option>
-              <option>List View</option>
-            </select>
+            <div className="w-80">
+              <Selector
+                options={options}
+                value={selectedOption}
+                onChange={(option) =>
+                  setSearchParams({ view: option?.value?.toString() || "Board" })
+                }
+              />
+            </div>
           </div>
 
-          <div className="flex gap-6 overflow-x-auto pb-4 overscroll-x-contain">
-            {TaskStatus.map((status) => (
-              <Column key={status} status={status} />
-            ))}
-          </div>
+          {view === "board" ? (
+            <div className="flex gap-6 overflow-x-auto pb-4 overscroll-x-contain">
+              {TaskStatus.map((status) => (
+                <Column key={status} status={status} />
+              ))}
+            </div>
+          ) : (
+            <ListView />
+          )}
         </div>
       </motion.div>
 

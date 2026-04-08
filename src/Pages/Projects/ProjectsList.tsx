@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { ClipboardPenLine, X, PencilLine } from "lucide-react";
 import api from "../../API/axiosInstance";
 import { Project } from "@/Types/Project";
-import Pagination from "@/Components/Pagination";
+import Pagination from "@/Utils/Pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;

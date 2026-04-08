@@ -1,11 +1,12 @@
 import api from "@/API/axiosInstance";
-import EditableText from "@/Components/EditableText";
-import CustomDatePicker from "@/Components/DatePicker";
+import EditableText from "@/Utils/EditableText";
+import CustomDatePicker from "@/Utils/DatePicker";
 import { Epic } from "@/Types/Epic";
 import { User, UserCircle, Calendar } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Selector from "@/Components/Selector";
+import Selector from "@/Utils/Selector";
+import { formatedDate } from "@/Utils/FormatedDate";
 
 interface Member {
   member_id: string;
@@ -28,11 +29,11 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
 
-  const formattedDate = new Date(epic.created_at).toLocaleDateString("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric"
-  });
+  // const formattedDate = new Date(epic.created_at).toLocaleDateString("en-US", {
+  //   month: "short",
+  //   day: "2-digit",
+  //   year: "numeric"
+  // });
 
   // Memoize options to prevent unnecessary re-renders of the Selector component
   const options = useMemo(
@@ -154,7 +155,7 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
               <Calendar size={18} className="text-gray-400" />
               <span className="text-gray-500 w-28">Created At:</span>
             </div>
-            <p className="text-gray-800 font-medium">{formattedDate}</p>
+            <p className="text-gray-800 font-medium">{formatedDate(epic.created_at)}</p>
           </div>
 
           <div className="flex items-center gap-4 text-sm">

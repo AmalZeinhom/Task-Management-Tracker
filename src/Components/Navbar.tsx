@@ -6,6 +6,7 @@ import { RootState } from "@/Store/store";
 export default function Navbar({ setIsMobileOpen }: { setIsMobileOpen?: (v: boolean) => void }) {
   const { user, loading } = useSelector((state: RootState) => state.auth);
 
+  // Present Naming for logged in users only.
   const initials =
     user?.name
       .split(" ")

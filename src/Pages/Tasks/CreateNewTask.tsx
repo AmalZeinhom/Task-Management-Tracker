@@ -1,6 +1,6 @@
 import api from "@/API/axiosInstance";
-import CustomDatePicker from "@/Components/DatePicker";
-import Selector from "@/Components/Selector";
+import CustomDatePicker from "@/Utils/DatePicker";
+import Selector from "@/Utils/Selector";
 import { statusOptions } from "@/Constants/taskStatus";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";

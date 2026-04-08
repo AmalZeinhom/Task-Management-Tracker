@@ -15,7 +15,7 @@ type AppSelectProps = {
 const customStyles = {
   control: (base: any, state: any) => ({
     ...base,
-    borderColor: state.isFocused ? "#3b82f6" : "#334155",
+    borderColor: state.isFocused ? "#3b82f6" : "none",
     boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
     borderRadius: "0.5rem",
     padding: "2px"
