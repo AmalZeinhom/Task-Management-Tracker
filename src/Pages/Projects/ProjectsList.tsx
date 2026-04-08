@@ -112,32 +112,33 @@ export default function ProjectsList() {
   }
 
   return (
-    <div className="flex justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="w-full py-8 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-7xl bg-brightness-light rounded-2xl p-8 sm:p-8 md:p-10"
+        className="w-full max-w-7xl mx-auto bg-brightness-light rounded-2xl p-4 sm:p-6 md:p-8"
       >
         <div>
           <motion.div
             initial={{ opacity: 0, y: -100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="sm:grid grid-cols-1 gap-3 lg:flex justify-between items-center mb-6"
+            className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2 mb-6"
           >
             <h2 className="text-lg md:text-2xl font-semibold text-blue-darkBlue">
               Assigned Projects
             </h2>
+
             <Link
               to={"/add-new-project"}
-              className="px-4 py-2 sm:max-w-[50%] bg-blue-darkBlue text-brightness-primary rounded-lg hover:bg-blue-800 transition"
+              className="px-4 py-2 max-w-[55%] sm:max-w-[50%] bg-blue-darkBlue text-brightness-primary rounded-lg hover:bg-blue-800 transition"
             >
               Add New Project
             </Link>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
             {projects.map((project: Project) => (
               <div
                 key={project.id}
