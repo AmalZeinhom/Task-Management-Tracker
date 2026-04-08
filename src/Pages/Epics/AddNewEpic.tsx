@@ -198,55 +198,65 @@ export default function AddNewEpic() {
             <p className="text-red-600 text-sm mb-4">{errors.description.message}</p>
           )}
 
-          <label htmlFor="assignee">Assign to</label>
+          <div className="grid grid-cols-1 gap-6 mb-6">
+            <div>
+              <label htmlFor="assignee">Assign to</label>
 
-          <div className="relative w-[25%]">
-            <select
-              {...register("assignee")}
-              id="assignee"
-              className="w-full h-11 border-2 border-gray-400 rounded-xl px-3 pr-10 mt-2 mb-5 appearance-none focus:shadow-xl focus:border-gray-500 outline-none"
-            >
-              <option value="">Select Assignee</option>
+              <div className="relative w-full sm:w-[25%] mt-2">
+                <select
+                  {...register("assignee")}
+                  id="assignee"
+                  className="w-full h-11 border-2 border-gray-400 rounded-xl px-3 pr-10 appearance-none focus:shadow-xl focus:border-gray-500 outline-none"
+                >
+                  <option value="">Select Assignee</option>
 
-              {members.map((member) => (
-                <option key={member.member_id} value={member.user_id}>
-                  {member.metadata.name}
-                </option>
-              ))}
-            </select>
+                  {members.map((member) => (
+                    <option key={member.member_id} value={member.user_id}>
+                      {member.metadata.name}
+                    </option>
+                  ))}
+                </select>
 
-            <ChevronDown
-              size={20}
-              className="pointer-events-none absolute right-3 top-[50%] -translate-y-[65%]  text-gray-600"
-            />
-          </div>
-
-          {errors.assignee && (
-            <p className="text-red-600 text-sm mb-4">{errors.assignee.message}</p>
-          )}
-
-          <div className="w-[25%]">
-            <Controller
-              name="deadline"
-              control={control}
-              render={({ field }) => (
-                <CustomDatePicker
-                  selectedDate={field.value ?? null}
-                  onDateChange={field.onChange}
+                <ChevronDown
+                  size={20}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
                 />
+              </div>
+
+              {errors.assignee && (
+                <p className="text-red-600 text-sm mt-1">{errors.assignee.message}</p>
               )}
-            />
+            </div>
+
+            <div>
+              <label>Deadline</label>
+
+              <div className="mt-2 w-full sm:w-[25%]">
+                <Controller
+                  name="deadline"
+                  control={control}
+                  render={({ field }) => (
+                    <CustomDatePicker
+                      selectedDate={field.value ?? null}
+                      onDateChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+
+              {errors.deadline && (
+                <p className="text-red-600 text-sm mt-1">{errors.deadline.message}</p>
+              )}
+            </div>
           </div>
 
-          {errors.deadline && <p className="text-red-600 text-sm">{errors.deadline.message}</p>}
-
-          <div className="flex justify-end gap-5">
+          <div className="flex flex-col sm:flex-row justify-end gap-4 mt-6">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isSubmitting}
-              className={`bg-blue-darkBlue text-white w-full sm:w-auto font-semibold px-6 py-2 rounded-xl shadow-2xl transition-colors duration-300 ${
+              className={`w-full sm:w-auto bg-blue-darkBlue text-white font-semibold px-6 py-2 rounded-xl shadow-2xl transition-colors duration-300 ${
                 isSubmitting ? "opacity-60 cursor-not-allowed" : "hover:bg-cyan-800"
               }`}
             >
@@ -258,7 +268,7 @@ export default function AddNewEpic() {
               whileTap={{ scale: 0.98 }}
               type="button"
               onClick={() => navigate(`/projects/${projectId}/epics`)}
-              className="bg-blue-lightBlue text-white w-full sm:w-auto font-semibold px-6 py-2 rounded-xl shadow-2xl hover:bg-cyan-800 transition-colors duration-300"
+              className="w-full sm:w-auto bg-blue-lightBlue text-white font-semibold px-6 py-2 rounded-xl shadow-2xl hover:bg-cyan-800 transition-colors duration-300"
             >
               Cancel
             </motion.button>
