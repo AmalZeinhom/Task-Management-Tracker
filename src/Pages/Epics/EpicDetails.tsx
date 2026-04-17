@@ -7,6 +7,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Selector from "@/Utils/Selector";
 import { formatedDate } from "@/Utils/FormatedDate";
+import { useUpdateEpic } from "@/hooks/useUpdateEpics";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Member {
   member_id: string;
@@ -29,16 +31,10 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
 
-  // const formattedDate = new Date(epic.created_at).toLocaleDateString("en-US", {
-  //   month: "short",
-  //   day: "2-digit",
-  //   year: "numeric"
-  // });
-
   // Memoize options to prevent unnecessary re-renders of the Selector component
   const options = useMemo(
     () => [
-      { label: "Unassigned", value: "null" },
+      { label: "Unassigned", value: null },
       ...members.map((m) => ({
         label: m.metadata.name,
         value: m.user_id
@@ -47,7 +43,10 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
     [members]
   );
 
-  const selectedAssignee = options.find((o) => o.value === epic.assignee?.sub) || null;
+  const selectedAssignee = options.find((o) => o.value === epic.assignee_id) || null;
+
+  const { updateEpic } = useUpdateEpic();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -66,13 +65,11 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
     fetchMembers();
   }, [epic.project_id]);
 
-  const updateEpic = async (id: string, data: any) => {
-    try {
-      await api.patch(`/rest/v1/epics?id=eq.${id}`, data, {
-        headers: { Prefer: "return=representation" }
-      });
-    } catch (err) {
-      console.error("Failed to update epic", err);
+  const handleUpdate = async (id: string, data: any) => {
+    const success = await updateEpic(id, data);
+
+    if (success) {
+      queryClient.invalidateQueries({ queryKey: ["epics"] });
     }
   };
 
@@ -111,7 +108,7 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
         <EditableText
           value={epic.title}
           onSave={(newTitle: string) => {
-            updateEpic(epic.id, { title: newTitle });
+            handleUpdate(epic.id, { title: newTitle });
             onUpdate({ title: newTitle });
           }}
           className="text-2xl font-semibold text-gray-900 mb-6"
@@ -130,19 +127,14 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
                 options={options}
                 value={selectedAssignee || null}
                 onChange={(option) => {
-                  const newUserId = option ? option.value : null;
+                  const newUserId = option?.value === null ? null : (option?.value ?? null);
 
-                  updateEpic(epic.id, { assignee_id: newUserId });
+                  handleUpdate(epic.id, {
+                    assignee_id: newUserId
+                  });
 
                   onUpdate({
-                    assignee: newUserId
-                      ? {
-                          sub: newUserId,
-                          name: option?.label || "",
-                          email: "",
-                          department: ""
-                        }
-                      : undefined
+                    assignee_id: newUserId
                   });
                 }}
                 placeholder={loadingMembers ? "Loading..." : "Select Assignee"}
@@ -166,7 +158,7 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
               <CustomDatePicker
                 selectedDate={epic.deadline ? new Date(epic.deadline) : null}
                 onDateChange={(date) => {
-                  updateEpic(epic.id, { deadline: date ? date.toISOString() : null });
+                  handleUpdate(epic.id, { deadline: date ? date.toISOString() : null });
 
                   onUpdate({
                     deadline: date ? date.toISOString() : undefined
@@ -186,7 +178,7 @@ export function EpicDetails({ epic, onUpdate }: EpicDetailsProps) {
             value={epic.description || ""}
             placeholder="Add description..."
             onSave={(newDesc: string) => {
-              updateEpic(epic.id, { description: newDesc });
+              handleUpdate(epic.id, { description: newDesc });
               onUpdate({ description: newDesc });
             }}
             className="text-gray-600 text-sm leading-relaxed"

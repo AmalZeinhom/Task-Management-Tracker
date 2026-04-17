@@ -3,22 +3,20 @@ export type Epic = {
   epic_id: string;
   title: string;
   description?: string;
-  deadline: string;
+  deadline?: string;
   created_at: string;
   project_id: string;
-  assignee_id?: string;
 
-  created_by: {
-    sub: string;
-    name: string;
-    email: string;
-    department: string;
-  };
+  assignee_id?: string | null;
 
-  assignee: {
-    sub: string;
-    name: string;
-    email: string;
-    department: string;
-  };
+  created_by: User;
+
+  assignee?: User | null;
+};
+
+type User = {
+  sub: string;
+  name: string;
+  email: string;
+  department: string;
 };

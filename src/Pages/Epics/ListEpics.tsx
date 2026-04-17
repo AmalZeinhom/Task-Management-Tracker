@@ -31,11 +31,11 @@ export default function ListEpics() {
 
   const updateEpicMutation = useMutation({
     mutationFn: async (updatedData: any) => {
-      return api.patch(`/rest/v1/project_epics?id=eq.${selectedEpic?.id}`, updatedData);
+      return api.patch(`/rest/v1/epics?id=eq.${selectedEpic?.id}`, updatedData);
     },
-    onSuccess: () => {
+    onSuccess: (_, updatedData) => {
       queryClient.invalidateQueries({ queryKey: ["epics"] });
-      setSelectedEpic(null); // يقفل الـ modal بعد التعديل
+      setSelectedEpic((prev) => (prev ? { ...prev, ...updatedData } : null));
     }
   });
 
@@ -157,7 +157,10 @@ export default function ListEpics() {
         <EpicsModal
           epic={selectedEpic}
           onClose={() => setSelectedEpic(null)}
-          onUpdate={(updatedFields: any) => {
+          onUpdate={(updatedFields: Partial<Epic>) => {
+            // Update local state so EpicDetails re-renders with new values
+            setSelectedEpic((prev) => (prev ? { ...prev, ...updatedFields } : null));
+            // Also persist to the server
             updateEpicMutation.mutate(updatedFields);
           }}
         />

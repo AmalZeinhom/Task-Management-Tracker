@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Epic } from "@/Types/Epic";
 import api from "@/API/axiosInstance";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-
 type EpicsResponse = {
   epics: Epic[];
   totalCount: number;
@@ -28,17 +25,11 @@ export function useEpics(projectId?: string, currentPage: number = 1, limit: num
     }
 
     try {
-      const response = await api.get<Epic[]>(`${supabaseUrl}/rest/v1/project_epics`, {
+      const response = await api.get<Epic[]>(`/rest/v1/project_epics`, {
         params: {
           project_id: `eq.${projectId}`,
           limit,
           offset: (currentPage - 1) * limit
-        },
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          Prefer: "count=exact"
         }
       });
 
