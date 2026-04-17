@@ -157,7 +157,7 @@ export default function Sidebar({
           ))}
         </nav>
 
-        <div className="absolute bottom-16 -right-5 overflow-visible z-50">
+        <div className="absolute bottom-16 -right-5 overflow-visible z-50 opacity-0 md:opacity-100">
           <button onClick={toggleSidebar} className="p-2 rounded-full bg-blue-darkBlue text-white">
             {isCollapsed ? <MdArrowForwardIos size={20} /> : <MdOutlineArrowBackIosNew size={20} />}
           </button>

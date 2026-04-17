@@ -17,8 +17,6 @@ const forceLogout = () => {
   Cookies.remove("refresh_token");
 
   store.dispatch(logout());
-
-  window.location.replace("/login");
 };
 
 // Interceptors for add the token with every request
