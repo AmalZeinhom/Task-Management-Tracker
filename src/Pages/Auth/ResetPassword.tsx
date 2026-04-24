@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { motion } from "framer-motion";
 import FormInput from "@/Common/FormInput";
-import { EyeClosedIcon, EyeOpenIcon } from "../assets/icons/eye";
+import { EyeClosedIcon, EyeOpenIcon } from "@/assets/icons/eye";
 import { LockKeyholeOpenIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";

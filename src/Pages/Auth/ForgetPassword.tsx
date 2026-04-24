@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import forgetPassword from "../assets/forget-pass.png";
+import forgetPassword from "@/assets/forget-pass.png";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import FormInput from "@/Common/FormInput";

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import registerImg from "../assets/register.png";
+import registerImg from "@/assets/register.png";
 import toast from "react-hot-toast";
 import FormInput from "@/Common/FormInput";
 import { NavLink, useNavigate } from "react-router-dom";
-import { EyeClosedIcon, EyeOpenIcon } from "../assets/icons/eye";
+import { EyeClosedIcon, EyeOpenIcon } from "@/assets/icons/eye";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasekey = import.meta.env.VITE_SUPABASE_KEY;

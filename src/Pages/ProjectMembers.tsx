@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import ProjectMemberSkeleton from "@/Common/ProjectMemberSkeleton";
 import api from "../API/axiosInstance";
-import Cookies from "js-cookie";
-import toast from "react-hot-toast";
+import { getInitials } from "@/Utils/GetInitials";
+import Selector from "@/Utils/Selector";
+import { roleOptions } from "@/Constants/roleOptions";
 
 export default function ProjectMembers() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [members, setMembers] = React.useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [members, setMembers] = useState([]);
 
   const { projectId } = useParams();
 
@@ -17,14 +18,6 @@ export default function ProjectMembers() {
 
   const fetchProjectMembers = async () => {
     try {
-      const accessToken = Cookies.get("access_token");
-
-      if (!accessToken) {
-        toast.error("Member Not Authorized!");
-        setIsLoading(false);
-        return;
-      }
-
       const response = await api.get(`/rest/v1/get_project_members?project_id=eq.${projectId}`);
 
       const data = response.data;
@@ -37,7 +30,7 @@ export default function ProjectMembers() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!projectId) {
       setIsLoading(false);
       return;
@@ -71,13 +64,14 @@ export default function ProjectMembers() {
       </div>
     );
   }
+
   return (
     <div className="flex justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-7xl bg-brightness-light rounded-2xl p-8 sm:p-8 md:p-10"
+        className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-7xl bg-brightness-light rounded-2xl p-4 md:p-8"
       >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -102,11 +96,11 @@ export default function ProjectMembers() {
           </Link>
         </motion.div>
 
-        <div className="w-full bg-brightness-primary py-10 px-5 sm:py-8 sm:px-6 rounded-2xl shadow-2xl">
-          <h2 className="text-xl sm:text-2xl font-semibold text-blue-darkBlue mb-2 text-start">
+        <div className="w-full bg-brightness-primary py-8 px-5 md:py-10 md:px-6 rounded-2xl shadow-2xl">
+          <h2 className="text-lg md:text-2xl font-semibold text-blue-darkBlue mb-2 text-start">
             Project Members
           </h2>
-          <p className="text-sm text-gray-500 mb-6 text-start">
+          <p className="text-sm md:text-base text-gray-500 mb-6 text-start">
             Invite your team members to collaborate on this project.
           </p>
 
@@ -115,33 +109,31 @@ export default function ProjectMembers() {
               key={member.id}
               className="flex items-center justify-between bg-white rounded-lg p-4 mb-4 shadow"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
                 <div className="flex items-center gap-4">
-                  <span className="bg-gray-300 rounded-full w-10 h-10 flex items-center justify-center text-gray-600 font-semibold">
-                    {member.metadata.name
-                      ? member.metadata.name
-                          .split(" ")
-                          .map((word: string) => word[0])
-                          .join("")
-                          .substring(0, 2)
-                          .toUpperCase()
-                      : "NA"}
+                  <span className="bg-gray-300 rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-sm md:text-lg text-gray-600 font-semibold">
+                    {getInitials(member.metadata.name)}
                   </span>
                   <span className="flex flex-col">
-                    <p className="text-base font-semibold text-darkness-dark ">
+                    <p className="text-sm md:text-base font-semibold text-darkness-dark ">
                       {member.metadata.name}
                     </p>
-                    <p className="text-sm text-gray-400">{member.email}</p>
+                    <p className="text-sm md:text-md text-gray-400">{member.email}</p>
                   </span>
                 </div>
 
                 <div className="relative flex items-center gap-2">
-                  <select
-                    value={member.role}
-                    className="p-2 pr-10 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-darkness-dark appearance-none"
-                  >
-                    <option>{member.role}</option>
-                  </select>
+                  <Selector
+                    options={roleOptions}
+                    value={roleOptions.find((o) => o.value === member.role) || null}
+                    onChange={(option) => {
+                      setMembers((prev: any) =>
+                        prev.map((m: any) =>
+                          m.id === member.id ? { ...m, role: option?.value } : m
+                        )
+                      );
+                    }}
+                  />
 
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-darkness-dark">
                     <ChevronDown size={18} />

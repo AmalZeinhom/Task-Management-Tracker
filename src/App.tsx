@@ -1,11 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Pages/Home.js";
 import { Toaster } from "react-hot-toast";
-import { SignUp } from "./Pages/SignUp.js";
-import { LogIn } from "./Pages/LogIn.js";
+import { SignUp } from "@/Pages/Auth/SignUp";
+import { LogIn } from "@/Pages/Auth/LogIn";
 import { Dashboard } from "./Pages/Dashboard.js";
-import { ForgetPassword } from "./Pages/ForgetPassword.js";
-import { ResetPassword } from "./Pages/ResetPassword.js";
+import { ForgetPassword } from "./Pages/Auth/ForgetPassword";
+import { ResetPassword } from "@/Pages/Auth/ResetPassword";
 import Layout from "./Components/Layout.js";
 import AddNewProject from "./Pages/Projects/AddNewProject.js";
 import ProjectsList from "./Pages/Projects/ProjectsList.js";
