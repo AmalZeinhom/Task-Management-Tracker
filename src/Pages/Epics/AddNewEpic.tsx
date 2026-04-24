@@ -8,11 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import api from "../../API/axiosInstance";
-import axios from "axios";
-import CustomDatePicker from "@/Utils/DatePicker";
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+import CustomDatePicker from "@/Components/DatePicker";
 
 const schema = z.object({
   title: z
@@ -86,23 +82,13 @@ export default function AddNewEpic() {
         return;
       }
 
-      const response = await api.post(
-        `${supabaseUrl}/rest/v1/epics`,
-        {
-          title: data.title,
-          description: data.description,
-          assignee_id: data.assignee,
-          deadline: data.deadline ? new Date(data.deadline).toISOString() : null,
-          project_id: projectId
-        },
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+      const response = await api.post(`/rest/v1/epics`, {
+        title: data.title,
+        description: data.description,
+        assignee_id: data.assignee,
+        deadline: data.deadline ? new Date(data.deadline).toISOString() : null,
+        project_id: projectId
+      });
 
       if (response.status !== 201 && response.status !== 200) {
         toast.error("Failed to Create the Epic");
@@ -112,11 +98,7 @@ export default function AddNewEpic() {
       toast.success("Epic Created Successfully.");
       reset();
     } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        toast.error(`Failed: ${error.response?.status} ${error.response?.data?.message || ""}`);
-      } else {
-        toast.error("Unknown Error Occurred");
-      }
+      toast.error(`Failed: ${error.response?.status} ${error.response?.data?.message || ""}`);
     }
   };
 
@@ -129,16 +111,7 @@ export default function AddNewEpic() {
           return;
         }
 
-        const response = await api.get(
-          `${supabaseUrl}/rest/v1/get_project_members?project_id=eq.${projectId}`,
-          {
-            headers: {
-              apikey: supabaseKey,
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`
-            }
-          }
-        );
+        const response = await api.get(`/rest/v1/get_project_members?project_id=eq.${projectId}`);
 
         setMembers(response.data);
       } catch (error: any) {

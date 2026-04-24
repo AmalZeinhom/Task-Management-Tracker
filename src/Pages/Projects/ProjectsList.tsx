@@ -1,18 +1,12 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { ClipboardPenLine, X, PencilLine } from "lucide-react";
 import api from "../../API/axiosInstance";
 import { Project } from "@/Types/Project";
-import Pagination from "@/Utils/Pagination";
+import Pagination from "@/Components/Pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-
-const accessToken = Cookies.get("access_token");
 
 export default function ProjectsList() {
   const navigate = useNavigate();
@@ -27,16 +21,10 @@ export default function ProjectsList() {
 
   async function fetchProjects() {
     try {
-      const response = await api.get(`${supabaseUrl}/rest/v1/rpc/get_projects`, {
+      const response = await api.get(`/rest/v1/rpc/get_projects`, {
         params: {
           limit,
           offset
-        },
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          Prefer: "count=exact"
         }
       });
 
@@ -67,13 +55,7 @@ export default function ProjectsList() {
 
   async function deleteProject(projectId: string) {
     try {
-      await api.delete(`${supabaseUrl}/rest/v1/projects?id=eq.${projectId}`, {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json"
-        }
-      });
+      await api.delete(`/rest/v1/projects?id=eq.${projectId}`);
       toast.success("Project deleted successfully.");
 
       queryClient.invalidateQueries({ queryKey: ["projects"] });

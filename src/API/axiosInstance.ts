@@ -73,7 +73,7 @@ api.interceptors.response.use(
 
         // Store the new token into cookies
         Cookies.set("access_token", newAccessToken, {
-          expires: 7
+          expires: 7 * 24 * 60 * 60 // 7 days
         });
 
         // Retry the original request, and update the Authorization header with the new access token.

@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { Epic } from "@/Types/Epic";
 import EpicsModal from "@/Pages/Epics/EpicsModal";
 import useProjectName from "@/hooks/useProjectName";
-import Pagination from "@/Utils/Pagination";
+import Pagination from "@/Components/Pagination";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/API/axiosInstance";
 

@@ -9,9 +9,6 @@ import axios from "axios";
 import api from "../../API/axiosInstance";
 import { Link } from "react-router-dom";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-
 const schema = z.object({
   title: z
     .string()
@@ -45,20 +42,10 @@ export default function AddNewProject() {
         return;
       }
 
-      const response = await api.post(
-        `${supabaseUrl}/rest/v1/projects`,
-        {
-          name: data.title,
-          description: data.description
-        },
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+      const response = await api.post(`/rest/v1/projects`, {
+        name: data.title,
+        description: data.description
+      });
 
       if (response.status !== 201 && response.status !== 200) {
         toast.error("Failed to Create the Project");

@@ -1,17 +1,14 @@
 import api from "@/API/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import Cookies from "js-cookie";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Pagination from "@/Utils/Pagination";
+import Pagination from "@/Components/Pagination";
 import { Task } from "@/Types/Tasks";
 import { getInitials } from "@/Utils/GetInitials";
 import { statusColors } from "@/Constants/statusColors";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { formatedDate } from "@/Utils/FormatedDate";
 import { getAvatarColor } from "@/Utils/GetAvatarColor";
-
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 export default function ListView() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -26,8 +23,6 @@ export default function ListView() {
 
   async function fetchListTasks() {
     try {
-      const accessToken = Cookies.get("access_token");
-
       const response = await api.get("/rest/v1/project_tasks", {
         params: {
           project_id: `eq.${projectId}`,
@@ -36,9 +31,6 @@ export default function ListView() {
           order: "task_id.asc"
         },
         headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
           Prefer: "count=exact"
         }
       });
@@ -119,7 +111,7 @@ export default function ListView() {
 
           <tbody>
             {tasks.map((task: Task) => {
-              const assigneeInitials = getInitials(task.assignee?.name);
+              const assigneeInitials = getInitials(task.assignee?.name || "Unassigned");
               const bgColor = getAvatarColor(task.assignee?.name);
 
               return (
@@ -142,7 +134,7 @@ export default function ListView() {
                     >
                       {assigneeInitials}
                     </div>
-                    <p className="text-gray-700">{task.assignee?.name || "Assignee"}</p>
+                    <p className="text-gray-700">{task.assignee?.name || "Unassigned"}</p>
                   </td>
 
                   <td className="px-4 py-3 text-gray-400 cursor-pointer">

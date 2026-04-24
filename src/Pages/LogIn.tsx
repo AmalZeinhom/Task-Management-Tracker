@@ -13,8 +13,6 @@ import { useDispatch } from "react-redux";
 import { getCurrentUser } from "@/Store/thunk";
 import type { AppDispatch } from "@/Store/store";
 
-const supabasekey = import.meta.env.VITE_SUPABASE_KEY;
-
 const signUpSchema = z.object({
   email: z.email("Email is required"),
   password: z.string().nonempty("Password is required"),
@@ -41,16 +39,7 @@ export function LogIn() {
     const { email, password } = data;
 
     try {
-      const response = await api.post(
-        `/auth/v1/token?grant_type=password`,
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            apikey: supabasekey
-          }
-        }
-      );
+      const response = await api.post(`/auth/v1/token?grant_type=password`, { email, password });
 
       //2. Collect The Required Data
       const { access_token, refresh_token, user } = response.data;

@@ -1,17 +1,12 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../API/axiosInstance";
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 export default function EditProject() {
   const navigate = useNavigate();
   const { projectId } = useParams();
-  const accessToken = Cookies.get("access_token");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -19,12 +14,7 @@ export default function EditProject() {
   useEffect(() => {
     async function fetchProjectData() {
       try {
-        const response = await api.get(`${supabaseUrl}/rest/v1/projects?id=eq.${projectId}`, {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
+        const response = await api.get(`/rest/v1/projects?id=eq.${projectId}`);
 
         if (response.data.length > 0) {
           const project = response.data[0];
@@ -44,20 +34,10 @@ export default function EditProject() {
     e.preventDefault();
 
     try {
-      const response = await api.patch(
-        `${supabaseUrl}/rest/v1/projects?id=eq.${projectId}`,
-        {
-          name: title,
-          description
-        },
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+      const response = await api.patch(`/rest/v1/projects?id=eq.${projectId}`, {
+        name: title,
+        description
+      });
 
       if (response.status === 401) {
         toast.error("Something Went Wrong!");

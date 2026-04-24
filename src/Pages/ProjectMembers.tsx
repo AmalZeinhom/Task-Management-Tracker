@@ -15,9 +15,6 @@ export default function ProjectMembers() {
 
   const isEmpty = !isLoading && members.length === 0;
 
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-
   const fetchProjectMembers = async () => {
     try {
       const accessToken = Cookies.get("access_token");
@@ -28,16 +25,7 @@ export default function ProjectMembers() {
         return;
       }
 
-      const response = await api.get(
-        `${supabaseUrl}/rest/v1/get_project_members?project_id=eq.${projectId}`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
-      );
+      const response = await api.get(`/rest/v1/get_project_members?project_id=eq.${projectId}`);
 
       const data = response.data;
 

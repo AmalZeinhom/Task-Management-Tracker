@@ -1,5 +1,5 @@
 import api from "@/API/axiosInstance";
-import CustomDatePicker from "@/Utils/DatePicker";
+import CustomDatePicker from "@/Components/DatePicker";
 import Selector from "@/Utils/Selector";
 import { statusOptions } from "@/Constants/taskStatus";
 import { motion } from "framer-motion";
@@ -12,9 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+import useProjectName from "@/hooks/useProjectName";
 
 const taskSchema = z.object({
   title: z
@@ -50,12 +48,12 @@ export default function Tasks() {
   const location = useLocation();
   const preSelectedEpicId = (location.state as any)?.epicId || null;
 
-  const [projectName, setProjectName] = useState("");
   const [assigneeOptions, setAssigneeOptions] = useState<any[]>([]);
   const [epicOptions, setEpicOptions] = useState<any[]>([]);
 
   const [searchParams] = useSearchParams();
   const statusFormUrl = searchParams.get("status") as FormData["status"] | null;
+  const projectName = useProjectName(projectId);
 
   const queryClient = useQueryClient();
 
@@ -88,23 +86,13 @@ export default function Tasks() {
     title.length > maxLength ? title.slice(0, maxLength) + "..." : title;
 
   useEffect(() => {
-    const fetchProjectName = async () => {
-      if (!projectId) return;
-      try {
-        const res = await api.get(`/rest/v1/projects?id=eq.${projectId}`);
-        setProjectName(res.data?.[0]?.name || "");
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchProjectName();
-  }, [projectId]);
-
-  useEffect(() => {
     const fetchAssignees = async () => {
       try {
-        const res = await api.get("/rest/v1/get_project_members");
+        const res = await api.get("/rest/v1/get_project_members", {
+          params: {
+            project_id: `eq.${projectId}`
+          }
+        });
 
         const mapped = res.data.map((m: any) => ({
           label: m.metadata.name,
@@ -118,7 +106,7 @@ export default function Tasks() {
     };
 
     fetchAssignees();
-  }, []);
+  }, [projectId]);
 
   useEffect(() => {
     const fetchEpics = async () => {
@@ -154,20 +142,10 @@ export default function Tasks() {
         return;
       }
 
-      const response = await api.post(
-        `${supabaseUrl}/rest/v1/tasks`,
-        {
-          ...data,
-          due_date: data.due_date ? new Date(data.due_date).toISOString() : null
-        },
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+      const response = await api.post(`/rest/v1/tasks`, {
+        ...data,
+        due_date: data.due_date ? new Date(data.due_date).toISOString() : null
+      });
       if (response.status !== 201 && response.status !== 200) {
         toast.error("Failed to Create the Task");
         return;
@@ -192,9 +170,21 @@ export default function Tasks() {
         className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-7xl bg-brightness-light rounded-2xl p-8 sm:p-8 md:p-10"
       >
         <div className="flex gap-2 mb-6 text-sm text-gray-500">
-          <Link to="/projects">Projects /</Link>
-          <Link to={`/projects/${projectId}`}>{projectName} /</Link>
-          <Link to={`/projects/${projectId}/tasks`}>Tasks /</Link>
+          <Link to="/projects" className="cursor-pointer text-gray-500 hover:text-gray-700">
+            Projects /
+          </Link>
+          <Link
+            to={`/projects/${projectId}`}
+            className="cursor-pointer text-gray-500 hover:text-gray-700"
+          >
+            {projectName} /
+          </Link>
+          <Link
+            to={`/projects/${projectId}/tasks`}
+            className="cursor-pointer text-gray-500 hover:text-gray-700"
+          >
+            Tasks /
+          </Link>
           <span>Create New</span>
         </div>
 

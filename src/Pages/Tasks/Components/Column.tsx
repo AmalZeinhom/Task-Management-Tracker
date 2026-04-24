@@ -3,13 +3,8 @@ import TaskCard from "./TaskCard";
 import api from "@/API/axiosInstance";
 import { PlusIcon } from "lucide-react";
 import { statusColors } from "@/Constants/statusColors";
-import Cookies from "js-cookie";
-import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import { useDroppable } from "@dnd-kit/core";
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 export default function Column({ status }: { status: string }) {
   const { projectId } = useParams<{ projectId: string }>();
@@ -20,23 +15,11 @@ export default function Column({ status }: { status: string }) {
   });
 
   const fetchTasks = async () => {
-    const accessToken = Cookies.get("access_token");
-
-    if (!accessToken) {
-      toast.error("User not authenticated!");
-      return [];
-    }
-
     try {
-      const res = await api.get(`${supabaseUrl}/rest/v1/tasks`, {
+      const res = await api.get(`/rest/v1/project_tasks`, {
         params: {
           project_id: `eq.${projectId}`,
           status: `eq.${status}`
-        },
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json"
         }
       });
 
